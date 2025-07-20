@@ -10,6 +10,22 @@ if (!$post) exit('Post not found');
 
 $postId = $post['id'];
 
+// Handle like messages
+$likeMessage = '';
+if (isset($_GET['like'])) {
+    switch ($_GET['like']) {
+        case 'like_success':
+            $likeMessage = '<div class="like-message success"><i class="fas fa-heart"></i> Thank you for liking this post!</div>';
+            break;
+        case 'already_liked':
+            $likeMessage = '<div class="like-message info"><i class="fas fa-info-circle"></i> You have already liked this post.</div>';
+            break;
+        case 'like_failed':
+            $likeMessage = '<div class="like-message error"><i class="fas fa-exclamation-triangle"></i> Failed to like the post. Please try again.</div>';
+            break;
+    }
+}
+
 // Likes
 $likesCount = $conn->query("SELECT COUNT(*) AS cnt FROM likes WHERE blog_id=$postId")->fetch_assoc()['cnt'];
 $ip = $_SERVER['REMOTE_ADDR'];
@@ -429,6 +445,47 @@ function renderComments($comments, $allComments) {
       font-style: italic;
     }
 
+    /* Like message styles */
+    .like-message {
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+      animation: slideInDown 0.5s ease-out;
+    }
+
+    .like-message.success {
+      background: rgba(5, 150, 105, 0.1);
+      color: var(--success-color);
+      border: 1px solid rgba(5, 150, 105, 0.2);
+    }
+
+    .like-message.info {
+      background: rgba(37, 99, 235, 0.1);
+      color: var(--primary-color);
+      border: 1px solid rgba(37, 99, 235, 0.2);
+    }
+
+    .like-message.error {
+      background: rgba(220, 38, 38, 0.1);
+      color: var(--danger-color);
+      border: 1px solid rgba(220, 38, 38, 0.2);
+    }
+
+    @keyframes slideInDown {
+      from {
+        transform: translateY(-20px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
     @media (max-width: 768px) {
       .blog-container {
         margin: 1rem auto;
@@ -585,6 +642,7 @@ function renderComments($comments, $allComments) {
   </div>
 
   <div class="engagement-section">
+    <?= $likeMessage ?>
     <div class="likes-container">
       <div class="likes-count">
         <i class="fas fa-heart" style="color: #dc2626;"></i>
@@ -762,6 +820,18 @@ function renderComments($comments, $allComments) {
   document.getElementById('backToTop').addEventListener('click', () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
+
+  // Auto-hide like messages after 5 seconds
+  const likeMessage = document.querySelector('.like-message');
+  if (likeMessage) {
+    setTimeout(() => {
+      likeMessage.style.opacity = '0';
+      likeMessage.style.transform = 'translateY(-20px)';
+      setTimeout(() => {
+        likeMessage.style.display = 'none';
+      }, 300);
+    }, 5000);
+  }
 </script>
 
 </body>
