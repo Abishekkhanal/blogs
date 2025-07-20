@@ -30,18 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   
   $title = $conn->real_escape_string($_POST['title']);
   $slug = $conn->real_escape_string($_POST['slug']);
-  // Handle content from different possible sources
-  $content = '';
-  if (!empty($_POST['content'])) {
-    $content = $_POST['content'];
-  } elseif (!empty($_POST['content_ckeditor'])) {
-    $content = $_POST['content_ckeditor'];
-  } elseif (!empty($_POST['content_plain'])) {
-    $content = $_POST['content_plain'];
-  }
-  
-  error_log("Content received: " . substr($content, 0, 100) . "...");
-  $content = $conn->real_escape_string($content);
+  $content = $conn->real_escape_string($_POST['content']);
   $category = $conn->real_escape_string($_POST['category']);
   $seo_title = $conn->real_escape_string($_POST['seo_title']);
   $seo_description = $conn->real_escape_string($_POST['seo_description']);
@@ -651,45 +640,13 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
               Blog Content <span class="required">*</span>
             </label>
             
-            <!-- Editor Selection -->
-            <div class="editor-selector">
-              <div class="editor-tabs">
-                <button type="button" class="editor-tab active" onclick="switchEditor('tinymce')">
-                  <i class="fas fa-feather-alt"></i> TinyMCE
-                </button>
-                <button type="button" class="editor-tab" onclick="switchEditor('ckeditor')">
-                  <i class="fas fa-pen-nib"></i> CKEditor 5
-                </button>
-                <button type="button" class="editor-tab" onclick="switchEditor('plain')">
-                  <i class="fas fa-code"></i> Plain Text
-                </button>
-              </div>
-            </div>
-            
-            <!-- Hidden field for actual content submission -->
-            <textarea id="final-content" name="content" required style="display: none;"></textarea>
-            
-            <!-- TinyMCE Editor -->
-            <div id="tinymce-container" class="editor-container">
-              <textarea id="tinymce-editor" class="form-textarea content-editor" 
-                        placeholder="Write your engaging blog content here..."></textarea>
-            </div>
-            
-            <!-- CKEditor 5 Container -->
-            <div id="ckeditor-container" class="editor-container" style="display: none;">
-              <div id="ckeditor-editor"></div>
-            </div>
-            
-            <!-- Plain Text Editor -->
-            <div id="plain-container" class="editor-container" style="display: none;">
-              <textarea id="plain-editor" class="form-textarea content-editor" 
-                        placeholder="Write your blog content here using HTML tags..."></textarea>
-            </div>
+            <!-- Simple Content Editor - Back to Basic for Testing -->
+            <textarea name="content" required class="form-textarea content-editor" 
+                      placeholder="Write your engaging blog content here..."></textarea>
             
             <div class="form-help">
               <i class="fas fa-info-circle"></i>
-              Choose your preferred editor above. TinyMCE and CKEditor provide rich text editing with formatting tools.
-              <br><small><strong>API Keys:</strong> TinyMCE works without API key but premium features require registration at <a href="https://www.tiny.cloud/" target="_blank">tiny.cloud</a></small>
+              Use HTML tags for formatting: &lt;b&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;, etc.
             </div>
           </div>
 
@@ -915,192 +872,19 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
     element.addEventListener('input', startAutoSave);
   });
 
-  // Rich Text Editors
-  let tinymceEditor = null;
-  let ckeditorEditor = null;
-  let currentEditor = 'tinymce';
-
-  // Initialize TinyMCE
-  function initTinyMCE() {
-    if (tinymceEditor) {
-      tinymce.remove('#tinymce-editor');
-    }
+  // Basic form functionality - with debug
+  console.log('Blog form loaded - basic functionality');
+  
+  // Add form submit listener for debugging
+  document.getElementById('blogForm').addEventListener('submit', function(e) {
+    console.log('Form submitted!');
+    console.log('Form data:', new FormData(this));
     
-    tinymce.init({
-      selector: '#tinymce-editor',
-      height: 400,
-      menubar: true,
-      // Free version plugins
-      plugins: [
-        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
-        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
-        'insertdatetime', 'media', 'table', 'help', 'wordcount'
-        // Premium plugins (requires API key):
-        // 'tinymcespellchecker', 'a11ychecker', 'mediaembed', 'linkchecker', 
-        // 'powerpaste', 'advtable', 'advcode', 'editimage', 'tiny_mce_wiris',
-        // 'mentions', 'tinycomments', 'checklist', 'export', 'formatpainter'
-      ],
-      toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
-      // Premium toolbar options (requires API key):
-      // toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
-      content_style: 'body { font-family: Inter, Arial, sans-serif; font-size: 14px; line-height: 1.6; }',
-      // Premium features configuration:
-      // skin: 'oxide-dark', // Premium dark theme
-      // branding: false, // Remove "Powered by TinyMCE"
-      // spellchecker_language: 'en',
-      // a11y_advanced_options: true,
-      setup: function(editor) {
-        tinymceEditor = editor;
-      }
-    });
-  }
-
-  // Initialize CKEditor 5
-  function initCKEditor() {
-    if (ckeditorEditor) {
-      ckeditorEditor.destroy();
+    // Check all form fields
+    const formData = new FormData(this);
+    for (let [key, value] of formData.entries()) {
+      console.log(key, ':', value);
     }
-    
-    ClassicEditor
-      .create(document.querySelector('#ckeditor-editor'), {
-        toolbar: {
-          items: [
-            'heading', '|',
-            'bold', 'italic', 'link', '|',
-            'bulletedList', 'numberedList', '|',
-            'outdent', 'indent', '|',
-            'imageUpload', 'blockQuote', 'insertTable', '|',
-            'undo', 'redo'
-          ]
-        },
-        language: 'en',
-        image: {
-          toolbar: [
-            'imageTextAlternative',
-            'imageStyle:full',
-            'imageStyle:side'
-          ]
-        },
-        table: {
-          contentToolbar: [
-            'tableColumn',
-            'tableRow',
-            'mergeTableCells'
-          ]
-        }
-      })
-      .then(editor => {
-        ckeditorEditor = editor;
-        // Set min height
-        editor.editing.view.change(writer => {
-          writer.setStyle('min-height', '300px', editor.editing.view.document.getRoot());
-        });
-      })
-      .catch(error => {
-        console.error('CKEditor initialization error:', error);
-      });
-  }
-
-  // Switch between editors
-  function switchEditor(editorType) {
-    // Update tab states
-    document.querySelectorAll('.editor-tab').forEach(tab => {
-      tab.classList.remove('active');
-    });
-    event.target.closest('.editor-tab').classList.add('active');
-
-    // Get current content
-    let currentContent = '';
-    if (currentEditor === 'tinymce' && tinymceEditor) {
-      currentContent = tinymceEditor.getContent();
-    } else if (currentEditor === 'ckeditor' && ckeditorEditor) {
-      currentContent = ckeditorEditor.getData();
-    } else if (currentEditor === 'plain') {
-      currentContent = document.getElementById('plain-editor').value;
-    }
-
-    // Hide all containers
-    document.getElementById('tinymce-container').style.display = 'none';
-    document.getElementById('ckeditor-container').style.display = 'none';
-    document.getElementById('plain-container').style.display = 'none';
-
-    // Show selected container and set content
-    if (editorType === 'tinymce') {
-      document.getElementById('tinymce-container').style.display = 'block';
-      setTimeout(() => {
-        if (tinymceEditor) {
-          tinymceEditor.setContent(currentContent);
-        } else {
-          initTinyMCE();
-          setTimeout(() => {
-            if (tinymceEditor) tinymceEditor.setContent(currentContent);
-          }, 500);
-        }
-      }, 100);
-    } else if (editorType === 'ckeditor') {
-      document.getElementById('ckeditor-container').style.display = 'block';
-      setTimeout(() => {
-        if (ckeditorEditor) {
-          ckeditorEditor.setData(currentContent);
-        } else {
-          initCKEditor();
-          setTimeout(() => {
-            if (ckeditorEditor) ckeditorEditor.setData(currentContent);
-          }, 500);
-        }
-      }, 100);
-    } else if (editorType === 'plain') {
-      document.getElementById('plain-container').style.display = 'block';
-      document.getElementById('plain-editor').value = currentContent;
-    }
-
-    currentEditor = editorType;
-    updateFormSubmission();
-  }
-
-  // Update form submission to use correct content
-  function updateFormSubmission() {
-    const form = document.querySelector('form');
-    
-    // Remove any existing listeners
-    form.removeEventListener('submit', handleFormSubmit);
-    form.addEventListener('submit', handleFormSubmit);
-  }
-
-  function handleFormSubmit(e) {
-    // Get content from active editor
-    let content = '';
-    if (currentEditor === 'tinymce' && tinymceEditor) {
-      content = tinymceEditor.getContent();
-    } else if (currentEditor === 'ckeditor' && ckeditorEditor) {
-      content = ckeditorEditor.getData();
-    } else if (currentEditor === 'plain') {
-      content = document.getElementById('plain-editor').value;
-    }
-    
-    // Update the hidden content field
-    document.getElementById('final-content').value = content;
-    
-    // Debug: Log the content and form data
-    console.log('Form submission:', {
-      editor: currentEditor,
-      content: content.substring(0, 100) + '...',
-      contentLength: content.length,
-      finalContentSet: document.getElementById('final-content').value.length > 0
-    });
-    
-    // Check if content is empty
-    if (!content.trim()) {
-      alert('Please add some content to your blog post!');
-      e.preventDefault();
-      return false;
-    }
-  }
-
-  // Initialize editors when page loads
-  window.addEventListener('load', function() {
-    initTinyMCE();
-    updateFormSubmission();
   });
 
   // Show helpful tips
