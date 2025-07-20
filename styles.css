@@ -175,11 +175,13 @@ body {
   box-shadow: 0 2px 4px rgba(0,0,0,0.05);
   transition: background-color 0.3s ease;
   flex-wrap: wrap;
+  min-height: 70px;
 }
 
 /* Logo styling - works for both direct anchor and .logo class */
 .navbar > a,
-.logo {
+.logo,
+.logo-link {
   display: flex;
   align-items: center;
   flex-shrink: 0;
@@ -187,9 +189,13 @@ body {
 }
 
 .navbar > a img,
-.logo img {
-  height: 50px; /* Adjust size as needed */
+.logo img,
+.logo-link img {
+  height: 55px; /* Slightly larger for better visibility */
+  max-height: 55px;
   width: auto;
+  max-width: 200px;
+  object-fit: contain;
   display: block;
 }
 
@@ -618,13 +624,14 @@ body {
 
   .navbar {
     top: 0 !important;
-    padding: 0.75rem 1rem;
+    padding: 1rem 1rem;
     display: flex !important;
     flex-direction: row !important;
     justify-content: space-between !important;
     align-items: center !important;
     flex-wrap: wrap;
     position: relative;
+    min-height: 60px;
   }
 
   /* Logo link - stays on left (your current structure) */
@@ -634,12 +641,18 @@ body {
     flex: 0 0 auto !important;
     margin-right: auto !important;
     margin-left: 0 !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   .navbar .logo-link img,
   .navbar > a:first-child img {
-    height: 40px !important;
-    width: auto;
+    height: 50px !important;
+    max-height: 50px !important;
+    width: auto !important;
+    max-width: 150px !important;
+    object-fit: contain !important;
+    display: block !important;
   }
 
   /* Checkbox and label positioning */
@@ -735,6 +748,17 @@ body {
     box-sizing: border-box;
   }
 
+  /* Enhance logo visibility on mobile */
+  .navbar .logo-link {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    padding: 2px 4px;
+  }
+
+  .navbar .logo-link img {
+    filter: contrast(1.1) brightness(1.05);
+  }
+
   /* Additional fix for your specific HTML structure */
   .navbar .logo-link,
   .navbar > a[href="index.php"] {
@@ -742,12 +766,17 @@ body {
     flex: 0 0 auto !important;
     margin-right: auto !important;
     margin-left: 0 !important;
+    display: flex !important;
+    align-items: center !important;
   }
 
   .navbar .logo-link img,
   .navbar > a[href="index.php"] img {
-    height: 40px !important;
-    max-height: 40px !important;
+    height: 50px !important;
+    max-height: 50px !important;
+    width: auto !important;
+    max-width: 150px !important;
+    object-fit: contain !important;
   }
 
   /* Ensure hamburger is on the right */
@@ -771,7 +800,9 @@ body {
   .navbar .logo-link img,
   .navbar > a img,
   .logo img {
-    height: 35px !important; /* Even smaller for very small screens */
+    height: 45px !important; /* Keep visible on very small screens */
+    max-height: 45px !important;
+    max-width: 130px !important;
   }
   
   .nav-toggle-label {
