@@ -640,13 +640,13 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
               Blog Content <span class="required">*</span>
             </label>
             
-            <!-- Simple Content Editor - Back to Basic for Testing -->
-            <textarea name="content" required class="form-textarea content-editor" 
+            <!-- TinyMCE Rich Text Editor -->
+            <textarea id="tinymce-editor" name="content" required class="form-textarea content-editor" 
                       placeholder="Write your engaging blog content here..."></textarea>
             
             <div class="form-help">
               <i class="fas fa-info-circle"></i>
-              Use HTML tags for formatting: &lt;b&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;, etc.
+              Use the rich text editor above for easy formatting, or switch to HTML mode for advanced editing.
             </div>
           </div>
 
@@ -753,8 +753,26 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
 
   // All form interference removed
 
-  // Minimal JavaScript - no interference
-  console.log('Blog form loaded - basic functionality');
+  // Initialize TinyMCE
+  tinymce.init({
+    selector: '#tinymce-editor',
+    height: 400,
+    menubar: true,
+    plugins: [
+      'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+      'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+      'insertdatetime', 'media', 'table', 'help', 'wordcount'
+    ],
+    toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | link image | code | help',
+    content_style: 'body { font-family: Inter, Arial, sans-serif; font-size: 14px; line-height: 1.6; }',
+    branding: false,
+    promotion: false,
+    setup: function(editor) {
+      console.log('TinyMCE initialized successfully');
+    }
+  });
+
+  console.log('Blog form loaded - with TinyMCE');
 </script>
 
 
