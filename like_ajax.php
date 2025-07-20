@@ -2,14 +2,32 @@
 header('Content-Type: application/json');
 include 'db.php';
 
+// Enable CORS if needed
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-Type');
+
 // Only handle POST requests for AJAX
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+    echo json_encode(['success' => false, 'message' => 'Invalid request method: ' . $_SERVER['REQUEST_METHOD']]);
     exit();
 }
 
-// Get JSON input
-$input = json_decode(file_get_contents('php://input'), true);
+// Get input data - try both JSON and form data
+$input = null;
+$contentType = $_SERVER['CONTENT_TYPE'] ?? '';
+
+if (strpos($contentType, 'application/json') !== false) {
+    // JSON request
+    $jsonInput = file_get_contents('php://input');
+    $input = json_decode($jsonInput, true);
+} else {
+    // Form data request
+    $input = $_POST;
+}
+
+// Debug: log the input
+error_log("Like AJAX Input: " . print_r($input, true));
 
 // Get parameters
 $blogId = isset($input['blog_id']) ? (int)$input['blog_id'] : 0;
@@ -17,7 +35,15 @@ $action = isset($input['action']) ? $input['action'] : ''; // 'like' or 'unlike'
 
 // Validate required data
 if (!$blogId || !in_array($action, ['like', 'unlike'])) {
-    echo json_encode(['success' => false, 'message' => 'Invalid parameters']);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'Invalid parameters', 
+        'debug' => [
+            'blog_id' => $blogId,
+            'action' => $action,
+            'input' => $input
+        ]
+    ]);
     exit();
 }
 
@@ -55,7 +81,7 @@ try {
                 'likes_count' => $newCount
             ]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to like post']);
+            echo json_encode(['success' => false, 'message' => 'Failed to like post: ' . $conn->error]);
         }
         
     } else if ($action === 'unlike') {
@@ -77,7 +103,7 @@ try {
                 'likes_count' => $newCount
             ]);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Failed to unlike post']);
+            echo json_encode(['success' => false, 'message' => 'Failed to unlike post or already unliked']);
         }
     }
     

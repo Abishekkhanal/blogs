@@ -892,18 +892,22 @@ function renderComments($comments, $allComments) {
     updateLikeButton(button, !isLiked, true);
     
     // Send AJAX request
+    const formData = new FormData();
+    formData.append('blog_id', blogId);
+    formData.append('action', action);
+    
     fetch('like_ajax.php', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        blog_id: blogId,
-        action: action
-      })
+      body: formData
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json();
+    })
     .then(data => {
+      console.log('Server response:', data);
       if (data.success) {
         // Update like count
         const countElement = document.getElementById('likes-count-' + blogId);
