@@ -28,6 +28,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   error_log("POST data: " . print_r($_POST, true));
   error_log("Status received: " . ($_POST['status'] ?? 'NOT SET'));
   
+  // Test database connection
+  $test_query = $conn->query("SELECT COUNT(*) as count FROM blogs");
+  if ($test_query) {
+    $count = $test_query->fetch_assoc()['count'];
+    error_log("Database connection OK. Current blog count: " . $count);
+  } else {
+    error_log("Database connection failed: " . $conn->error);
+  }
+  
+  // Check session
+  error_log("Session admin: " . ($_SESSION['admin'] ?? 'NOT SET'));
+  
   $title = $conn->real_escape_string($_POST['title']);
   $slug = $conn->real_escape_string($_POST['slug']);
   $content = $conn->real_escape_string($_POST['content']);
@@ -36,9 +48,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   $seo_description = $conn->real_escape_string($_POST['seo_description']);
   $tags = $conn->real_escape_string($_POST['tags']);
   $status = $_POST['status'] ?? 'draft';
-  $author = $_SESSION['admin'];
+  $author = $_SESSION['admin'] ?? 'unknown';
   
   error_log("Final status: " . $status);
+  error_log("Author: " . $author);
   
   // Validate required fields
   if (empty($title)) {
@@ -65,15 +78,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   }
 
   if (!$error_message) {
+    error_log("About to insert into database...");
+    error_log("Title: " . $title);
+    error_log("Slug: " . $slug);
+    error_log("Content length: " . strlen($content));
+    error_log("Category: " . $category);
+    error_log("Author: " . $author);
+    error_log("Status: " . $status);
+    
     $stmt = $conn->prepare("INSERT INTO blogs (title, slug, content, category, image, author, seo_title, seo_description, tags, status)
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssssssss", $title, $slug, $content, $category, $image, $author, $seo_title, $seo_description, $tags, $status);
-
-    if ($stmt->execute()) {
-      $success_message = "✅ Blog post " . ($status === 'published' ? 'published' : 'saved as draft') . " successfully!";
+    
+    if (!$stmt) {
+      error_log("Prepare failed: " . $conn->error);
+      $error_message = "❌ Database prepare error: " . $conn->error;
     } else {
-      $error_message = "❌ Error: " . $stmt->error;
+      $stmt->bind_param("ssssssssss", $title, $slug, $content, $category, $image, $author, $seo_title, $seo_description, $tags, $status);
+
+      if ($stmt->execute()) {
+        error_log("Insert successful! Insert ID: " . $conn->insert_id);
+        $success_message = "✅ Blog post " . ($status === 'published' ? 'published' : 'saved as draft') . " successfully!";
+      } else {
+        error_log("Execute failed: " . $stmt->error);
+        $error_message = "❌ Error: " . $stmt->error;
+      }
     }
+  } else {
+    error_log("Validation failed: " . $error_message);
   }
 }
 
