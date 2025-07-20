@@ -1,56 +1,47 @@
 <?php
 include 'db.php';
 
-// Step 1: Check for blog_id
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['blog_id'])) {
-    $blogId = (int)$_POST['blog_id'];
-    $slug = $_POST['slug'] ?? '';
-} elseif (isset($_GET['blog_id'])) {
-    $blogId = (int)$_GET['blog_id'];
-    $slug = $_GET['slug'] ?? '';
-} else {
-    // Redirect back if no blog_id found
+// Only handle POST requests
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: blogs.php");
     exit();
 }
 
-// Step 2: Get the IP address
+// Get POST data
+$blogId = isset($_POST['blog_id']) ? (int)$_POST['blog_id'] : 0;
+$slug = isset($_POST['slug']) ? trim($_POST['slug']) : '';
+
+// Validate required data
+if (!$blogId || !$slug) {
+    header("Location: blogs.php");
+    exit();
+}
+
+// Get user's IP address
 $ip = $_SERVER['REMOTE_ADDR'];
 
-// Step 3: Check if already liked
-$stmt = $conn->prepare("SELECT id FROM likes WHERE blog_id = ? AND user_ip = ?");
-$stmt->bind_param("is", $blogId, $ip);
-$stmt->execute();
-$result = $stmt->get_result();
-
-$message = '';
-$success = false;
+// Check if user already liked this post
+$checkStmt = $conn->prepare("SELECT id FROM likes WHERE blog_id = ? AND user_ip = ?");
+$checkStmt->bind_param("is", $blogId, $ip);
+$checkStmt->execute();
+$result = $checkStmt->get_result();
 
 if ($result->num_rows > 0) {
+    // Already liked
     $message = 'already_liked';
 } else {
-    // Step 4: Insert the like
-    $insert = $conn->prepare("INSERT INTO likes (blog_id, user_ip) VALUES (?, ?)");
-    $insert->bind_param("is", $blogId, $ip);
-    if ($insert->execute()) {
+    // Add new like
+    $insertStmt = $conn->prepare("INSERT INTO likes (blog_id, user_ip) VALUES (?, ?)");
+    $insertStmt->bind_param("is", $blogId, $ip);
+    
+    if ($insertStmt->execute()) {
         $message = 'like_success';
-        $success = true;
     } else {
         $message = 'like_failed';
     }
 }
 
-// Step 5: Redirect back to the blog-view page with message
-if ($slug) {
-    $redirectUrl = "blog-view.php?slug=" . urlencode($slug);
-    if ($message) {
-        $redirectUrl .= "&like=" . $message;
-    }
-    header("Location: $redirectUrl");
-    exit();
-} else {
-    // Fallback redirect to blogs page
-    header("Location: blogs.php");
-    exit();
-}
+// Redirect back to blog post with message
+header("Location: blog-view.php?slug=" . urlencode($slug) . "&like=" . $message);
+exit();
 ?>
