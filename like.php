@@ -1,15 +1,15 @@
 <?php
 include 'db.php';
 
-// Only handle POST requests
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: blogs.php");
-    exit();
+// Handle GET requests (simple link approach)
+if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+    $blogId = isset($_GET['blog_id']) ? (int)$_GET['blog_id'] : 0;
+    $slug = isset($_GET['slug']) ? trim($_GET['slug']) : '';
+} else {
+    // Fallback: also handle POST requests
+    $blogId = isset($_POST['blog_id']) ? (int)$_POST['blog_id'] : 0;
+    $slug = isset($_POST['slug']) ? trim($_POST['slug']) : '';
 }
-
-// Get POST data
-$blogId = isset($_POST['blog_id']) ? (int)$_POST['blog_id'] : 0;
-$slug = isset($_POST['slug']) ? trim($_POST['slug']) : '';
 
 // Validate required data
 if (!$blogId || !$slug) {
