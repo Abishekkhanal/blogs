@@ -93,27 +93,36 @@ $categories = $conn->query("SELECT DISTINCT category FROM blogs WHERE status='pu
       margin-top: 0;
       position: relative;
       z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .hero-content {
       max-width: 800px;
       margin: 0 auto;
-      padding: 0 1rem;
+      padding: 0 2rem;
+      text-align: center;
+      width: 100%;
     }
 
     .hero-title {
       font-family: 'Playfair Display', serif;
       font-size: clamp(2.5rem, 5vw, 4rem);
       font-weight: 600;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      line-height: 1.2;
+      text-align: center;
     }
 
     .hero-subtitle {
       font-size: 1.25rem;
       opacity: 0.9;
-      max-width: 600px;
+      max-width: 650px;
       margin: 0 auto;
+      line-height: 1.6;
+      text-align: center;
     }
 
     .blog-container {
@@ -350,14 +359,23 @@ $categories = $conn->query("SELECT DISTINCT category FROM blogs WHERE status='pu
     @media (max-width: 768px) {
       .blog-hero {
         padding: 6rem 0 2rem 0;
+        min-height: auto;
+      }
+
+      .hero-content {
+        padding: 0 1rem;
       }
 
       .hero-title {
         font-size: 2rem;
+        margin-bottom: 1rem;
+        line-height: 1.3;
       }
 
       .hero-subtitle {
         font-size: 1rem;
+        max-width: 100%;
+        line-height: 1.5;
       }
 
       .blog-filters {
@@ -380,6 +398,21 @@ $categories = $conn->query("SELECT DISTINCT category FROM blogs WHERE status='pu
 
       .blog-card {
         margin: 0 0.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-content {
+        padding: 0 0.75rem;
+      }
+
+      .hero-title {
+        font-size: 1.75rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .hero-subtitle {
+        font-size: 0.95rem;
       }
     }
 
