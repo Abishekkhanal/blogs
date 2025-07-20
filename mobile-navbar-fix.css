@@ -1,0 +1,201 @@
+/* ======= MOBILE NAVBAR FIX ======= */
+
+/* Enhanced navbar for better mobile layout */
+.navbar {
+  background-color: white;
+  position: sticky;
+  top: 40px; /* Offset for topbar */
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: background-color 0.3s ease;
+}
+
+/* Logo styling - for direct anchor with image */
+.navbar > a {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.navbar > a img {
+  height: 50px;
+  width: auto;
+  display: block;
+}
+
+/* Navigation toggle styling */
+.nav-toggle {
+  display: none;
+}
+
+.nav-toggle-label {
+  display: none;
+  font-size: 1.8rem;
+  color: #004b23;
+  cursor: pointer;
+  padding: 0.5rem;
+}
+
+/* Navigation links */
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  padding: 0;
+  margin: 0;
+}
+
+/* ======= MOBILE RESPONSIVE ======= */
+@media (max-width: 768px) {
+  .topbar {
+    display: none !important;
+  }
+
+  .navbar {
+    top: 0 !important;
+    padding: 0.75rem 1rem;
+    flex-wrap: nowrap;
+    position: relative;
+  }
+
+  /* Logo - stays on left */
+  .navbar > a {
+    order: 1;
+    margin-right: auto;
+    align-items: center;
+  }
+
+  .navbar > a img {
+    height: 40px; /* Smaller on mobile */
+    width: auto;
+  }
+
+  /* Hamburger menu - stays on right */
+  .nav-toggle-label {
+    display: block;
+    order: 2;
+    position: static; /* Remove absolute positioning */
+    margin-left: auto;
+  }
+
+  /* Navigation menu */
+  nav {
+    order: 3;
+    width: 100%;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background: #fff;
+    padding: 10px 20px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+  }
+
+  .nav-links li {
+    margin: 10px 0;
+    text-align: left;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 0.5rem 0;
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+  }
+
+  /* Show menu when toggle is checked */
+  .nav-toggle:checked ~ nav .nav-links {
+    display: flex;
+  }
+
+  /* Alternative selector for different HTML structure */
+  .nav-toggle:checked + .nav-toggle-label + nav .nav-links {
+    display: flex;
+  }
+
+  /* Dropdown menus on mobile */
+  .dropdown {
+    position: static !important;
+    display: block !important;
+    box-shadow: none !important;
+    background: #f8f8f8 !important;
+    margin-left: 1rem;
+  }
+
+  .dropdown a {
+    padding: 8px 15px !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .navbar > a img {
+    height: 35px; /* Even smaller for very small screens */
+  }
+  
+  .nav-toggle-label {
+    font-size: 1.6rem;
+  }
+
+  .nav-links {
+    padding: 8px 15px;
+  }
+}
+
+/* Ensure proper layout */
+.navbar {
+  flex-wrap: wrap; /* Allow wrapping if needed */
+}
+
+.navbar > * {
+  flex-shrink: 0; /* Prevent items from shrinking */
+}
+
+/* Fix for logo container if using .logo class */
+.logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  min-width: fit-content;
+}
+
+.logo img {
+  height: 50px;
+  width: auto;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .logo {
+    order: 1;
+    margin-right: auto;
+  }
+  
+  .logo img {
+    height: 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo img {
+    height: 35px;
+  }
+}
