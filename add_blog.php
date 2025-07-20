@@ -608,7 +608,7 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
         </div>
       <?php endif; ?>
 
-      <form method="POST" enctype="multipart/form-data" id="blogForm">
+      <form method="POST" enctype="multipart/form-data" id="blogForm" onsubmit="console.log('Main form submitting...')">
         <div class="form-grid">
           <!-- Basic Information -->
           <div class="form-row">
@@ -728,21 +728,42 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
               </div>
             </div>
           </div>
+          
+          <!-- Submit Buttons Inside Form -->
+          <div class="submit-section">
+            <button type="submit" name="status" value="draft" class="btn-submit btn-draft">
+              <i class="fas fa-save"></i>
+              Save as Draft
+            </button>
+            <button type="submit" name="status" value="published" class="btn-submit btn-publish">
+              <i class="fas fa-rocket"></i>
+              Publish Blog
+            </button>
+          </div>
         </div>
       </form>
     </div>
-
-    <div class="submit-section">
-      <button type="submit" form="blogForm" name="status" value="draft" class="btn-submit btn-draft">
-        <i class="fas fa-save"></i>
-        Save as Draft
-      </button>
-      <button type="submit" form="blogForm" name="status" value="published" class="btn-submit btn-publish">
-        <i class="fas fa-rocket"></i>
-        Publish Blog
-      </button>
-    </div>
   </div>
+</div>
+
+<!-- Temporary Debug Form for Comparison -->
+<div style="position: fixed; bottom: 10px; right: 10px; background: #f0f0f0; padding: 10px; border: 2px solid #ccc; max-width: 300px; z-index: 9999;">
+  <h4>Working Debug Form</h4>
+  <form method="POST" style="font-size: 12px;">
+    <input type="text" name="title" placeholder="Test Title" required style="width: 100%; margin: 2px 0;"><br>
+    <input type="text" name="slug" placeholder="test-slug" required style="width: 100%; margin: 2px 0;"><br>
+    <textarea name="content" placeholder="Test content" required style="width: 100%; height: 40px; margin: 2px 0;"></textarea><br>
+    <select name="category" required style="width: 100%; margin: 2px 0;">
+      <option value="">Select Category</option>
+      <option value="travel">Travel</option>
+      <option value="food">Food</option>
+    </select><br>
+    <input type="text" name="seo_title" placeholder="SEO Title" style="width: 100%; margin: 2px 0;"><br>
+    <input type="text" name="seo_description" placeholder="SEO Description" style="width: 100%; margin: 2px 0;"><br>
+    <input type="text" name="tags" placeholder="tags" style="width: 100%; margin: 2px 0;"><br>
+    <button type="submit" name="status" value="draft" style="width: 48%; margin: 2px 1%;">Draft</button>
+    <button type="submit" name="status" value="published" style="width: 48%; margin: 2px 1%;">Publish</button>
+  </form>
 </div>
 
 <script>
@@ -876,19 +897,8 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
     element.addEventListener('input', startAutoSave);
   });
 
-  // Basic form functionality - no interference
+  // Minimal JavaScript - no form interference
   console.log('Blog form loaded - basic functionality');
-  
-  // Remove any potential form interference
-  // Just log when the page loads, don't interfere with submission
-
-  // Show helpful tips
-  setTimeout(() => {
-    if (!localStorage.getItem('blogTipsShown')) {
-      alert('💡 Pro Tips:\n\n• Use Ctrl+S to save as draft\n• Use Ctrl+Enter to publish\n• SEO title should be under 60 characters\n• SEO description should be under 160 characters\n• Use relevant tags for better discoverability\n• Switch between TinyMCE, CKEditor, and Plain Text for different editing experiences');
-      localStorage.setItem('blogTipsShown', 'true');
-    }
-  }, 3000);
 </script>
 
 
