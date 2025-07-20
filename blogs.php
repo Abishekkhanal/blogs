@@ -602,7 +602,7 @@ $categories = $conn->query("SELECT DISTINCT category FROM blogs WHERE status='pu
               </div>
               <div class="meta-item">
                 <i class="fas fa-user"></i>
-                <span><?= htmlspecialchars($blog['author'] ?: 'Anugra Tours') ?></span>
+                <span><?= $blog['author'] ? 'by admin' : 'Anugra Tours' ?></span>
               </div>
             </div>
             

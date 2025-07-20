@@ -564,10 +564,10 @@ function renderComments($comments, $allComments) {
           <i class="fas fa-calendar-alt"></i>
           <span><?= date('M d, Y', strtotime($post['created_at'])) ?></span>
         </div>
-        <div class="meta-item">
-          <i class="fas fa-user"></i>
-          <span><?= htmlspecialchars($post['author'] ?: 'Anugra Tours') ?></span>
-        </div>
+                 <div class="meta-item">
+           <i class="fas fa-user"></i>
+           <span><?= $post['author'] ? 'by admin' : 'Anugra Tours' ?></span>
+         </div>
         <div class="meta-item">
           <i class="fas fa-tags"></i>
           <span><?= htmlspecialchars($post['tags']) ?></span>
