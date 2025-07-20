@@ -6,6 +6,18 @@ if (!isset($_SESSION['admin'])) {
 }
 include 'db.php';
 
+// ============================================================================
+// RICH TEXT EDITOR API CONFIGURATION
+// ============================================================================
+// TinyMCE API Key (Optional - for premium features)
+// Get your free API key from: https://www.tiny.cloud/
+// Replace 'YOUR_TINYMCE_API_KEY' in the script tag below with your actual key
+$TINYMCE_API_KEY = 'YOUR_TINYMCE_API_KEY'; // Change this to your actual API key
+
+// CKEditor 5 - No API key needed for basic version
+// For premium CKEditor features, visit: https://ckeditor.com/pricing/
+// ============================================================================
+
 $success_message = '';
 $error_message = '';
 
@@ -61,7 +73,9 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   
   <!-- Rich Text Editors -->
-  <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+  <!-- TinyMCE: Get your free API key from https://www.tiny.cloud/ -->
+  <script src="https://cdn.tiny.cloud/1/<?= $TINYMCE_API_KEY ?>/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+  <!-- CKEditor 5: No API key needed for basic version -->
   <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
   <style>
     :root {
@@ -644,6 +658,7 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
             <div class="form-help">
               <i class="fas fa-info-circle"></i>
               Choose your preferred editor above. TinyMCE and CKEditor provide rich text editing with formatting tools.
+              <br><small><strong>API Keys:</strong> TinyMCE works without API key but premium features require registration at <a href="https://www.tiny.cloud/" target="_blank">tiny.cloud</a></small>
             </div>
           </div>
 
@@ -884,13 +899,25 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
       selector: '#tinymce-editor',
       height: 400,
       menubar: true,
+      // Free version plugins
       plugins: [
         'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
         'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
         'insertdatetime', 'media', 'table', 'help', 'wordcount'
+        // Premium plugins (requires API key):
+        // 'tinymcespellchecker', 'a11ychecker', 'mediaembed', 'linkchecker', 
+        // 'powerpaste', 'advtable', 'advcode', 'editimage', 'tiny_mce_wiris',
+        // 'mentions', 'tinycomments', 'checklist', 'export', 'formatpainter'
       ],
       toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+      // Premium toolbar options (requires API key):
+      // toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
       content_style: 'body { font-family: Inter, Arial, sans-serif; font-size: 14px; line-height: 1.6; }',
+      // Premium features configuration:
+      // skin: 'oxide-dark', // Premium dark theme
+      // branding: false, // Remove "Powered by TinyMCE"
+      // spellchecker_language: 'en',
+      // a11y_advanced_options: true,
       setup: function(editor) {
         tinymceEditor = editor;
       }
