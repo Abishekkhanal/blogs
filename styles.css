@@ -619,68 +619,68 @@ body {
 /* Mobile Navigation Styles */
 @media (max-width: 768px) {
   .topbar {
-    display: none !important;
+    display: none;
   }
 
   .navbar {
-    top: 0 !important;
-    padding: 12px 16px !important;
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between !important;
-    align-items: center !important;
+    top: 0;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     flex-wrap: wrap;
     position: relative;
-    min-height: 64px !important;
-    box-sizing: border-box !important;
+    min-height: 64px;
+    box-sizing: border-box;
   }
 
   /* Logo link - stays on left (your current structure) */
   .navbar .logo-link,
   .navbar > a:first-child {
-    order: 1 !important;
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    display: flex !important;
-    align-items: center !important;
-    height: 40px !important;
+    order: 1;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    height: 40px;
   }
 
   .navbar .logo-link img,
   .navbar > a:first-child img {
-    height: 40px !important;
-    max-height: 40px !important;
-    width: auto !important;
-    max-width: 140px !important;
-    object-fit: contain !important;
-    display: block !important;
-    margin: 0 !important;
-    padding: 0 !important;
+    height: 40px;
+    max-height: 40px;
+    width: auto;
+    max-width: 140px;
+    object-fit: contain;
+    display: block;
+    margin: 0;
+    padding: 0;
   }
 
   /* Checkbox and label positioning */
   .nav-toggle {
-    order: 2 !important;
-    position: absolute !important;
-    opacity: 0 !important;
-    pointer-events: none !important;
+    order: 2;
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
   }
 
   .nav-toggle-label {
-    order: 3 !important;
-    flex: 0 0 auto !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    font-size: 24px !important;
-    color: #004b23 !important;
-    cursor: pointer !important;
-    height: 40px !important;
-    width: 40px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    line-height: 1 !important;
+    order: 3;
+    flex: 0 0 auto;
+    margin: 0;
+    padding: 0;
+    font-size: 24px;
+    color: #004b23;
+    cursor: pointer;
+    height: 40px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
   }
 
   /* Navigation container */
@@ -716,22 +716,22 @@ body {
 
   /* Show menu when toggle is checked */
   .nav-toggle:checked + .nav-toggle-label + nav .nav-links {
-    display: flex !important;
+    display: flex;
   }
 
   /* Dropdown menus on mobile */
   .dropdown {
-    position: static !important;
-    display: block !important;
-    box-shadow: none !important;
-    background: #f8f8f8 !important;
+    position: static;
+    display: block;
+    box-shadow: none;
+    background: #f8f8f8;
     margin-left: 1rem;
-    min-width: auto !important;
+    min-width: auto;
   }
 
   .dropdown a {
-    padding: 8px 15px !important;
-    font-size: 0.9rem !important;
+    padding: 8px 15px;
+    font-size: 0.9rem;
   }
 
   /* Footer adjustments */
@@ -759,30 +759,30 @@ body {
 
   /* Clean mobile navbar layout */
   .navbar > * {
-    box-sizing: border-box !important;
+    box-sizing: border-box;
   }
 }
 
 /* Extra small devices */
 @media (max-width: 480px) {
   .navbar {
-    padding: 10px 12px !important;
-    min-height: 60px !important;
+    padding: 10px 12px;
+    min-height: 60px;
   }
   
   .navbar .logo-link,
   .navbar .logo-link img,
   .navbar > a img,
   .logo img {
-    height: 36px !important;
-    max-height: 36px !important;
-    max-width: 120px !important;
+    height: 36px;
+    max-height: 36px;
+    max-width: 120px;
   }
   
   .nav-toggle-label {
-    font-size: 22px !important;
-    height: 36px !important;
-    width: 36px !important;
+    font-size: 22px;
+    height: 36px;
+    width: 36px;
   }
 
   .nav-links {
