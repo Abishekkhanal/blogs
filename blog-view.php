@@ -17,11 +17,20 @@ if (isset($_GET['like'])) {
         case 'like_success':
             $likeMessage = '<div class="like-message success"><i class="fas fa-heart"></i> Thank you for liking this post!</div>';
             break;
+        case 'unlike_success':
+            $likeMessage = '<div class="like-message info"><i class="fas fa-heart-broken"></i> You have unliked this post.</div>';
+            break;
         case 'already_liked':
             $likeMessage = '<div class="like-message info"><i class="fas fa-info-circle"></i> You have already liked this post.</div>';
             break;
+        case 'already_unliked':
+            $likeMessage = '<div class="like-message info"><i class="fas fa-info-circle"></i> You have not liked this post yet.</div>';
+            break;
         case 'like_failed':
             $likeMessage = '<div class="like-message error"><i class="fas fa-exclamation-triangle"></i> Failed to like the post. Please try again.</div>';
+            break;
+        case 'unlike_failed':
+            $likeMessage = '<div class="like-message error"><i class="fas fa-exclamation-triangle"></i> Failed to unlike the post. Please try again.</div>';
             break;
     }
 }
@@ -697,13 +706,13 @@ function renderComments($comments, $allComments) {
         <span id="likes-count-<?= $post['id'] ?>"><?= $likesCount ?> likes</span>
       </div>
       <?php if (!$hasLiked): ?>
-        <button type="button" class="like-btn" onclick="testLike(<?= (int)$post['id'] ?>)" data-liked="false">
+        <a href="like.php?blog_id=<?= (int)$post['id'] ?>&slug=<?= urlencode($post['slug']) ?>" class="like-btn">
           <i class="fas fa-thumbs-up"></i> <span class="like-text">Like this post</span>
-        </button>
+        </a>
       <?php else: ?>
-        <button type="button" class="like-btn liked" onclick="testLike(<?= (int)$post['id'] ?>)" data-liked="true">
+        <a href="like.php?blog_id=<?= (int)$post['id'] ?>&slug=<?= urlencode($post['slug']) ?>&action=unlike" class="like-btn liked">
           <i class="fas fa-heart"></i> <span class="like-text">Liked</span>
-        </button>
+        </a>
       <?php endif; ?>
     </div>
 
@@ -877,125 +886,7 @@ function renderComments($comments, $allComments) {
     }, 5000);
   }
 
-  // Simple test function first
-  function testLike(blogId) {
-    console.log('testLike called with blogId:', blogId);
-    
-    const currentButton = event.target.closest('.like-btn');
-    const isLiked = currentButton.dataset.liked === 'true';
-    
-    // First test: Simple AJAX call to test endpoint
-    console.log('Testing AJAX functionality...');
-    
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', 'like_simple.php', true);
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState === 4) {
-        console.log('XHR Status:', xhr.status);
-        console.log('XHR Response:', xhr.responseText);
-        
-        if (xhr.status === 200) {
-          try {
-            const data = JSON.parse(xhr.responseText);
-            console.log('Parsed data:', data);
-            
-            if (data.success) {
-              alert('AJAX test successful! Method: ' + data.method);
-              // Now try the real like functionality
-              realLike(blogId, currentButton);
-            } else {
-              alert('AJAX test failed: ' + data.message);
-            }
-          } catch (e) {
-            console.error('JSON parse error:', e);
-            alert('JSON parse error');
-          }
-        } else {
-          alert('HTTP error: ' + xhr.status);
-        }
-      }
-    };
-    
-    xhr.send('test=1&blog_id=' + blogId);
-  }
-  
-  function realLike(blogId, button) {
-    const isLiked = button.dataset.liked === 'true';
-    
-    if (isLiked) {
-      // For now, just update UI for unlike
-      updateLikeButtonSimple(button, false);
-      alert('Unlike functionality - local only for now');
-    } else {
-      // Use working like.php
-      window.location.href = 'like.php?blog_id=' + blogId + '&slug=<?= urlencode($post['slug']) ?>';
-    }
-  }
-  
-  function updateLikeButtonSimple(button, liked) {
-    const icon = button.querySelector('i');
-    const text = button.querySelector('.like-text');
-    
-    if (liked) {
-      button.classList.add('liked');
-      button.dataset.liked = 'true';
-      icon.className = 'fas fa-heart';
-      text.textContent = 'Liked';
-    } else {
-      button.classList.remove('liked');
-      button.dataset.liked = 'false';
-      icon.className = 'fas fa-thumbs-up';
-      text.textContent = 'Like this post';
-    }
-  }
-
-  function updateLikeButton(button, liked, loading) {
-    button.classList.remove('loading');
-    
-    if (loading) {
-      button.classList.add('loading');
-      return;
-    }
-    
-    const icon = button.querySelector('i');
-    const text = button.querySelector('.like-text');
-    
-    if (liked) {
-      button.classList.add('liked');
-      button.dataset.liked = 'true';
-      icon.className = 'fas fa-heart';
-      text.textContent = 'Liked';
-    } else {
-      button.classList.remove('liked');
-      button.dataset.liked = 'false';
-      icon.className = 'fas fa-thumbs-up';
-      text.textContent = 'Like this post';
-    }
-  }
-
-  function showNotification(message, type) {
-    // Create notification element
-    const notification = document.createElement('div');
-    notification.className = `like-notification ${type}`;
-    notification.innerHTML = `
-      <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i>
-      ${message}
-    `;
-    
-    // Add to page
-    document.body.appendChild(notification);
-    
-    // Show with animation
-    setTimeout(() => notification.classList.add('show'), 100);
-    
-    // Remove after 3 seconds
-    setTimeout(() => {
-      notification.classList.remove('show');
-      setTimeout(() => document.body.removeChild(notification), 300);
-    }, 3000);
-  }
+  // Simple like functionality - no complex JavaScript needed
 
 
 </script>
