@@ -261,6 +261,20 @@ function renderComments($comments, $allComments) {
       transform: none;
     }
 
+    .like-btn.liked {
+      background: linear-gradient(135deg, #dc2626, #b91c1c);
+      color: white;
+    }
+
+    .like-btn.liked:hover {
+      background: linear-gradient(135deg, #b91c1c, #991b1b);
+    }
+
+    .like-btn.loading {
+      opacity: 0.7;
+      pointer-events: none;
+    }
+
     .social-share {
       margin-bottom: 2rem;
     }
@@ -486,6 +500,40 @@ function renderComments($comments, $allComments) {
       }
     }
 
+    /* Real-time like notifications */
+    .like-notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: white;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 500;
+      z-index: 1000;
+      transform: translateX(400px);
+      opacity: 0;
+      transition: var(--transition);
+    }
+
+    .like-notification.show {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .like-notification.error {
+      border-left: 4px solid var(--danger-color);
+      color: var(--danger-color);
+    }
+
+    .like-notification.success {
+      border-left: 4px solid var(--success-color);
+      color: var(--success-color);
+    }
+
     @media (max-width: 768px) {
       .blog-container {
         margin: 1rem auto;
@@ -646,15 +694,15 @@ function renderComments($comments, $allComments) {
     <div class="likes-container">
       <div class="likes-count">
         <i class="fas fa-heart" style="color: #dc2626;"></i>
-        <span><?= $likesCount ?> likes</span>
+        <span id="likes-count-<?= $post['id'] ?>"><?= $likesCount ?> likes</span>
       </div>
       <?php if (!$hasLiked): ?>
-        <a href="like.php?blog_id=<?= (int)$post['id'] ?>&slug=<?= urlencode($post['slug']) ?>" class="like-btn" style="text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;">
-          <i class="fas fa-thumbs-up"></i> Like this post
-        </a>
+        <button type="button" class="like-btn" onclick="toggleLike(<?= (int)$post['id'] ?>, '<?= htmlspecialchars($post['slug']) ?>', this)" data-liked="false">
+          <i class="fas fa-thumbs-up"></i> <span class="like-text">Like this post</span>
+        </button>
       <?php else: ?>
-        <button disabled class="like-btn">
-          <i class="fas fa-check"></i> You liked this
+        <button type="button" class="like-btn liked" onclick="toggleLike(<?= (int)$post['id'] ?>, '<?= htmlspecialchars($post['slug']) ?>', this)" data-liked="true">
+          <i class="fas fa-heart"></i> <span class="like-text">Liked</span>
         </button>
       <?php endif; ?>
     </div>
@@ -827,6 +875,109 @@ function renderComments($comments, $allComments) {
         likeMessage.style.display = 'none';
       }, 300);
     }, 5000);
+  }
+
+  // Real-time like functionality (Facebook/Instagram style)
+  function toggleLike(blogId, slug, button) {
+    // Prevent multiple clicks
+    if (button.classList.contains('loading')) {
+      return;
+    }
+
+    button.classList.add('loading');
+    const isLiked = button.dataset.liked === 'true';
+    const action = isLiked ? 'unlike' : 'like';
+    
+    // Optimistic UI update
+    updateLikeButton(button, !isLiked, true);
+    
+    // Send AJAX request
+    fetch('like_ajax.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        blog_id: blogId,
+        action: action
+      })
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Update like count
+        const countElement = document.getElementById('likes-count-' + blogId);
+        if (countElement) {
+          countElement.textContent = data.likes_count + ' likes';
+        }
+        
+        // Update button state
+        updateLikeButton(button, data.action === 'liked', false);
+        
+        // Show subtle animation
+        button.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+          button.style.transform = 'scale(1)';
+        }, 150);
+        
+      } else {
+        // Revert optimistic update on error
+        updateLikeButton(button, isLiked, false);
+        showNotification(data.message, 'error');
+      }
+    })
+    .catch(error => {
+      // Revert optimistic update on error
+      updateLikeButton(button, isLiked, false);
+      showNotification('Network error. Please try again.', 'error');
+      console.error('Like error:', error);
+    });
+  }
+
+  function updateLikeButton(button, liked, loading) {
+    button.classList.remove('loading');
+    
+    if (loading) {
+      button.classList.add('loading');
+      return;
+    }
+    
+    const icon = button.querySelector('i');
+    const text = button.querySelector('.like-text');
+    
+    if (liked) {
+      button.classList.add('liked');
+      button.dataset.liked = 'true';
+      icon.className = 'fas fa-heart';
+      text.textContent = 'Liked';
+    } else {
+      button.classList.remove('liked');
+      button.dataset.liked = 'false';
+      icon.className = 'fas fa-thumbs-up';
+      text.textContent = 'Like this post';
+    }
+  }
+
+  function showNotification(message, type) {
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `like-notification ${type}`;
+    notification.innerHTML = `
+      <i class="fas fa-${type === 'error' ? 'exclamation-circle' : 'check-circle'}"></i>
+      ${message}
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Show with animation
+    setTimeout(() => notification.classList.add('show'), 100);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => document.body.removeChild(notification), 300);
+    }, 3000);
   }
 
 
