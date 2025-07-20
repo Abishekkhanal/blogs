@@ -649,10 +649,10 @@ function renderComments($comments, $allComments) {
         <span><?= $likesCount ?> likes</span>
       </div>
       <?php if (!$hasLiked): ?>
-        <form method="POST" action="like.php">
+        <form method="POST" action="like.php" id="like-form-<?= $post['id'] ?>">
           <input type="hidden" name="blog_id" value="<?= (int)$post['id'] ?>">
           <input type="hidden" name="slug" value="<?= htmlspecialchars($post['slug']) ?>">
-          <button type="submit" class="like-btn">
+          <button type="button" class="like-btn" onclick="submitLikeForm(<?= $post['id'] ?>)">
             <i class="fas fa-thumbs-up"></i> Like this post
           </button>
         </form>
@@ -831,6 +831,15 @@ function renderComments($comments, $allComments) {
         likeMessage.style.display = 'none';
       }, 300);
     }, 5000);
+  }
+
+  // Handle like form submission
+  function submitLikeForm(postId) {
+    const form = document.getElementById('like-form-' + postId);
+    if (form) {
+      console.log('Submitting like form for post ID:', postId);
+      form.submit();
+    }
   }
 </script>
 
