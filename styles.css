@@ -9,7 +9,7 @@ body {
   color: #333;
 }
 
-/* ======= PRELOADER ======= */
+/* Preloader */
 #preloader {
   position: fixed;
   top: 0;
@@ -35,7 +35,7 @@ body {
 }
 
 .preloader-logo {
-  width: 120px; /* adjust as needed */
+  width: 120px;
   animation: zoomIn 1.5s ease-in-out infinite alternate;
 }
 
@@ -58,7 +58,6 @@ body {
   50% { opacity: 1; }
 }
 
-/* ======= SCROLLING BANNER ======= */
 .snowfall-banner.modern {
   background-color: #003300;
   overflow: hidden;
@@ -79,43 +78,6 @@ body {
 @keyframes ticker-scroll {
   0% { transform: translateX(0%); }
   100% { transform: translateX(-100%); }
-}
-
-/*marquee*/
-.scrolling-text {
-  width: 100%;
-  overflow: hidden;
-  white-space: nowrap;
-  box-sizing: border-box;
-  background-color: #003300;
-  color: white;
-  font-weight: bold;
-  padding: 10px 0;
-  position: relative;
-}
-
-.scrolling-text::after {
-  content: '';
-  position: absolute;
-  top: 0; bottom: 0; right: 0;
-  width: 30px;
-  background: linear-gradient(to right, transparent, #003300);
-  z-index: 1;
-}
-
-.scrolling-text span {
-  display: inline-block;
-  padding-left: 100%;
-  animation: scroll-ticker 20s linear infinite;
-}
-
-@keyframes scroll-ticker {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
 }
 
 /* ======= TOPBAR ======= */
@@ -166,7 +128,7 @@ body {
 .navbar {
   background-color: white;
   position: sticky;
-  top: 40px; /* Offset for topbar */
+  top: 40px;
   z-index: 1000;
   display: flex;
   justify-content: space-between;
@@ -191,7 +153,7 @@ body {
 .navbar > a img,
 .logo img,
 .logo-link img {
-  height: 55px; /* Slightly larger for better visibility */
+  height: 55px;
   max-height: 55px;
   width: auto;
   max-width: 200px;
@@ -208,11 +170,10 @@ body {
   display: none;
   font-size: 1.8rem;
   color: #004b23;
+  padding-right: 20px;
   cursor: pointer;
-  padding: 0.5rem;
 }
 
-/* Navigation links */
 .nav-links {
   list-style: none;
   display: flex;
@@ -313,7 +274,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4); /* semi-dark overlay */
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .hero-content h1 {
@@ -346,7 +307,7 @@ body {
 
 /* Hero explore section */
 .hero-explore {
-  background-image: url('images/sikkim-nature.jpg'); /* Place your landscape image here */
+  background-image: url('images/sikkim-nature.jpg');
   background-size: cover;
   background-position: center;
   height: 320px;
@@ -384,7 +345,7 @@ body {
 /* Animations */
 @keyframes fadeIn {
   from { opacity: 0; }
-  to   { opacity: 1; }
+  to { opacity: 1; }
 }
 
 @keyframes slideUp {
@@ -453,7 +414,7 @@ body {
   display: inline-block;
   margin-top: 10px;
   padding: 8px 16px;
-  background-color: #25D366; /* WhatsApp green */
+  background-color: #25D366;
   color: white;
   border-radius: 6px;
   text-decoration: none;
@@ -476,7 +437,7 @@ body {
   border-radius: 4px;
 }
 
-/* ======= BACK TO TOP BUTTON ======= */
+/* Back to Top Button */
 #backToTop {
   position: fixed;
   bottom: 40px;
@@ -502,8 +463,10 @@ body {
 /* ======= POPUP ======= */
 .popup-overlay {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   justify-content: center;
@@ -635,7 +598,7 @@ body {
     box-sizing: border-box;
   }
 
-  /* Logo link - stays on left (your current structure) */
+  /* Logo link - stays on left */
   .navbar .logo-link,
   .navbar > a:first-child {
     order: 1;
@@ -817,7 +780,7 @@ body {
 
 /* Ensure proper flexbox behavior */
 .navbar > * {
-  flex-shrink: 0; /* Prevent items from shrinking */
+  flex-shrink: 0;
 }
 
 /* Additional utility classes */
@@ -831,6 +794,45 @@ body {
 
 .mb-2 {
   margin-bottom: 2rem;
+}
+
+/* Marquee */
+.scrolling-text {
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+  box-sizing: border-box;
+  background-color: #003300;
+  color: white;
+  font-weight: bold;
+  padding: 10px 0;
+  position: relative;
+}
+
+.scrolling-text::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  background: linear-gradient(to right, transparent, #003300);
+  z-index: 1;
+}
+
+.scrolling-text span {
+  display: inline-block;
+  padding-left: 100%;
+  animation: scroll-ticker 20s linear infinite;
+}
+
+@keyframes scroll-ticker {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
 }
 
 /* Print styles */
