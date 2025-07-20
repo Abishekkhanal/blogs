@@ -87,9 +87,12 @@ $categories = $conn->query("SELECT DISTINCT category FROM blogs WHERE status='pu
     .blog-hero {
       background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
       color: white;
-      padding: 4rem 0;
+      padding: 8rem 0 4rem 0;
       text-align: center;
       margin-bottom: 3rem;
+      margin-top: 0;
+      position: relative;
+      z-index: 1;
     }
 
     .hero-content {
@@ -346,7 +349,7 @@ $categories = $conn->query("SELECT DISTINCT category FROM blogs WHERE status='pu
 
     @media (max-width: 768px) {
       .blog-hero {
-        padding: 2rem 0;
+        padding: 6rem 0 2rem 0;
       }
 
       .hero-title {
