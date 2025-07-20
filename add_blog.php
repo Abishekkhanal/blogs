@@ -23,8 +23,7 @@ $error_message = '';
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-  // Basic logging for debugging if needed
-  error_log("Blog form submitted by: " . ($_SESSION['admin'] ?? 'unknown'));
+
   
   $title = $conn->real_escape_string($_POST['title']);
   $slug = $conn->real_escape_string($_POST['slug']);
@@ -35,9 +34,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   $tags = $conn->real_escape_string($_POST['tags']);
   $status = $_POST['status'] ?? 'draft';
   $author = $_SESSION['admin'] ?? 'unknown';
-  
-  error_log("Final status: " . $status);
-  error_log("Author: " . $author);
   
   // Validate required fields
   if (empty($title)) {
@@ -608,7 +604,7 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
         </div>
       <?php endif; ?>
 
-      <form method="POST" enctype="multipart/form-data" id="blogForm" onsubmit="console.log('Main form submitting...')">
+      <form method="POST" enctype="multipart/form-data" id="blogForm">
         <div class="form-grid">
           <!-- Basic Information -->
           <div class="form-row">
@@ -746,158 +742,18 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
   </div>
 </div>
 
-<!-- Temporary Debug Form for Comparison -->
-<div style="position: fixed; bottom: 10px; right: 10px; background: #f0f0f0; padding: 10px; border: 2px solid #ccc; max-width: 300px; z-index: 9999;">
-  <h4>Working Debug Form</h4>
-  <form method="POST" style="font-size: 12px;">
-    <input type="text" name="title" placeholder="Test Title" required style="width: 100%; margin: 2px 0;"><br>
-    <input type="text" name="slug" placeholder="test-slug" required style="width: 100%; margin: 2px 0;"><br>
-    <textarea name="content" placeholder="Test content" required style="width: 100%; height: 40px; margin: 2px 0;"></textarea><br>
-    <select name="category" required style="width: 100%; margin: 2px 0;">
-      <option value="">Select Category</option>
-      <option value="travel">Travel</option>
-      <option value="food">Food</option>
-    </select><br>
-    <input type="text" name="seo_title" placeholder="SEO Title" style="width: 100%; margin: 2px 0;"><br>
-    <input type="text" name="seo_description" placeholder="SEO Description" style="width: 100%; margin: 2px 0;"><br>
-    <input type="text" name="tags" placeholder="tags" style="width: 100%; margin: 2px 0;"><br>
-    <button type="submit" name="status" value="draft" style="width: 48%; margin: 2px 1%;">Draft</button>
-    <button type="submit" name="status" value="published" style="width: 48%; margin: 2px 1%;">Publish</button>
-  </form>
-</div>
+
 
 <script>
-  // Character counters
-  function setupCharacterCounter(inputId, counterId, maxLength) {
-    const input = document.getElementById(inputId);
-    const counter = document.getElementById(counterId);
-    
-    input.addEventListener('input', function() {
-      const length = this.value.length;
-      counter.textContent = length;
-      counter.parentElement.style.color = length > maxLength * 0.9 ? 'var(--danger-color)' : 'var(--text-secondary)';
-    });
-  }
+  // Character counters removed to fix form submission
 
-  setupCharacterCounter('titleInput', 'titleCount', 255);
-  setupCharacterCounter('seoTitleInput', 'seoTitleCount', 60);
-  setupCharacterCounter('seoDescInput', 'seoDescCount', 160);
+  // Auto-generate functions removed to fix form submission
 
-  // Auto-generate slug from title
-  document.getElementById('titleInput').addEventListener('input', function() {
-    const title = this.value;
-    const slug = title
-      .toLowerCase()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim('-');
-    
-    document.getElementById('slugInput').value = slug;
-    document.getElementById('slugPreview').textContent = slug || 'your-blog-url';
-  });
+  // Image preview removed to fix form submission
 
-  // Manual slug update
-  document.getElementById('slugInput').addEventListener('input', function() {
-    document.getElementById('slugPreview').textContent = this.value || 'your-blog-url';
-  });
+  // All form interference removed
 
-  // Auto-generate SEO title from main title
-  document.getElementById('titleInput').addEventListener('input', function() {
-    const seoTitleInput = document.getElementById('seoTitleInput');
-    if (!seoTitleInput.value) {
-      seoTitleInput.value = this.value;
-      setupCharacterCounter('seoTitleInput', 'seoTitleCount', 60);
-      document.getElementById('seoTitleCount').textContent = this.value.length;
-    }
-  });
-
-  // Image preview
-  document.getElementById('imageInput').addEventListener('change', function() {
-    const file = this.files[0];
-    const preview = document.getElementById('imagePreview');
-    
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        preview.innerHTML = `
-          <div style="display: flex; align-items: center; gap: 1rem;">
-            <img src="${e.target.result}" style="width: 100px; height: 60px; object-fit: cover; border-radius: 6px;">
-            <div>
-              <div style="font-weight: 600;">${file.name}</div>
-              <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                ${(file.size / 1024 / 1024).toFixed(2)} MB
-              </div>
-            </div>
-            <button type="button" onclick="clearImage()" style="margin-left: auto; background: var(--danger-color); color: white; border: none; padding: 0.5rem; border-radius: 4px; cursor: pointer;">
-              <i class="fas fa-times"></i>
-            </button>
-          </div>
-        `;
-        preview.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  function clearImage() {
-    document.getElementById('imageInput').value = '';
-    document.getElementById('imagePreview').style.display = 'none';
-  }
-
-  // Form submission loading states
-  document.querySelectorAll('.btn-submit').forEach(button => {
-    button.addEventListener('click', function() {
-      const form = document.getElementById('blogForm');
-      
-      // Basic validation
-      if (!form.checkValidity()) {
-        form.reportValidity();
-        return;
-      }
-
-      const originalContent = this.innerHTML;
-      this.innerHTML = '<div class="spinner"></div> Processing...';
-      this.disabled = true;
-
-      // Re-enable after timeout as fallback
-      setTimeout(() => {
-        this.innerHTML = originalContent;
-        this.disabled = false;
-      }, 5000);
-    });
-  });
-
-  // Keyboard shortcuts
-  document.addEventListener('keydown', function(e) {
-    // Ctrl/Cmd + S for save as draft
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-      e.preventDefault();
-      document.querySelector('.btn-draft').click();
-    }
-    
-    // Ctrl/Cmd + Enter for publish
-    if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-      e.preventDefault();
-      document.querySelector('.btn-publish').click();
-    }
-  });
-
-  // Auto-save draft functionality (could be enhanced)
-  let autoSaveTimer;
-  function startAutoSave() {
-    clearTimeout(autoSaveTimer);
-    autoSaveTimer = setTimeout(() => {
-      // This could save draft automatically
-      console.log('Auto-save would trigger here');
-    }, 30000); // 30 seconds
-  }
-
-  document.querySelectorAll('input, textarea, select').forEach(element => {
-    element.addEventListener('input', startAutoSave);
-  });
-
-  // Minimal JavaScript - no form interference
+  // Minimal JavaScript - no interference
   console.log('Blog form loaded - basic functionality');
 </script>
 
