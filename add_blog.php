@@ -59,6 +59,10 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  
+  <!-- Rich Text Editors -->
+  <script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+  <script src="https://cdn.ckeditor.com/ckeditor5/40.1.0/classic/ckeditor.js"></script>
   <style>
     :root {
       --primary-color: #2563eb;
@@ -273,6 +277,72 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
       font-family: 'Georgia', serif;
       font-size: 1.05rem;
       line-height: 1.8;
+    }
+
+    /* Rich Text Editors */
+    .editor-selector {
+      margin-bottom: 1rem;
+    }
+
+    .editor-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .editor-tab {
+      padding: 0.75rem 1.5rem;
+      border: 2px solid var(--border-color);
+      background: white;
+      color: var(--text-secondary);
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .editor-tab:hover {
+      background: var(--bg-secondary);
+      border-color: var(--primary-color);
+      color: var(--text-primary);
+    }
+
+    .editor-tab.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--primary-color);
+    }
+
+    .editor-container {
+      border: 2px solid var(--border-color);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    /* CKEditor 5 Styling */
+    .ck-editor__editable {
+      min-height: 300px !important;
+    }
+
+    .ck.ck-editor {
+      border: none !important;
+    }
+
+    .ck.ck-editor__main > .ck-editor__editable {
+      border: none !important;
+      border-radius: 0 !important;
+    }
+
+    /* TinyMCE Styling */
+    .tox .tox-editor-header {
+      border-bottom: 1px solid var(--border-color) !important;
+    }
+
+    .tox .tox-edit-area {
+      border: none !important;
     }
 
     .form-help {
@@ -537,11 +607,43 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
               <i class="fas fa-edit"></i>
               Blog Content <span class="required">*</span>
             </label>
-            <textarea name="content" required class="form-textarea content-editor" 
-                      placeholder="Write your engaging blog content here..."></textarea>
+            
+            <!-- Editor Selection -->
+            <div class="editor-selector">
+              <div class="editor-tabs">
+                <button type="button" class="editor-tab active" onclick="switchEditor('tinymce')">
+                  <i class="fas fa-feather-alt"></i> TinyMCE
+                </button>
+                <button type="button" class="editor-tab" onclick="switchEditor('ckeditor')">
+                  <i class="fas fa-pen-nib"></i> CKEditor 5
+                </button>
+                <button type="button" class="editor-tab" onclick="switchEditor('plain')">
+                  <i class="fas fa-code"></i> Plain Text
+                </button>
+              </div>
+            </div>
+            
+            <!-- TinyMCE Editor -->
+            <div id="tinymce-container" class="editor-container">
+              <textarea id="tinymce-editor" name="content" required class="form-textarea content-editor" 
+                        placeholder="Write your engaging blog content here..."></textarea>
+            </div>
+            
+            <!-- CKEditor 5 Container -->
+            <div id="ckeditor-container" class="editor-container" style="display: none;">
+              <div id="ckeditor-editor"></div>
+              <textarea id="ckeditor-content" name="content_ckeditor" style="display: none;"></textarea>
+            </div>
+            
+            <!-- Plain Text Editor -->
+            <div id="plain-container" class="editor-container" style="display: none;">
+              <textarea id="plain-editor" name="content_plain" class="form-textarea content-editor" 
+                        placeholder="Write your blog content here using HTML tags..."></textarea>
+            </div>
+            
             <div class="form-help">
               <i class="fas fa-info-circle"></i>
-              Use HTML tags for formatting: &lt;b&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;li&gt;, etc.
+              Choose your preferred editor above. TinyMCE and CKEditor provide rich text editing with formatting tools.
             </div>
           </div>
 
@@ -767,13 +869,175 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
     element.addEventListener('input', startAutoSave);
   });
 
+  // Rich Text Editors
+  let tinymceEditor = null;
+  let ckeditorEditor = null;
+  let currentEditor = 'tinymce';
+
+  // Initialize TinyMCE
+  function initTinyMCE() {
+    if (tinymceEditor) {
+      tinymce.remove('#tinymce-editor');
+    }
+    
+    tinymce.init({
+      selector: '#tinymce-editor',
+      height: 400,
+      menubar: true,
+      plugins: [
+        'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+        'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+        'insertdatetime', 'media', 'table', 'help', 'wordcount'
+      ],
+      toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+      content_style: 'body { font-family: Inter, Arial, sans-serif; font-size: 14px; line-height: 1.6; }',
+      setup: function(editor) {
+        tinymceEditor = editor;
+      }
+    });
+  }
+
+  // Initialize CKEditor 5
+  function initCKEditor() {
+    if (ckeditorEditor) {
+      ckeditorEditor.destroy();
+    }
+    
+    ClassicEditor
+      .create(document.querySelector('#ckeditor-editor'), {
+        toolbar: {
+          items: [
+            'heading', '|',
+            'bold', 'italic', 'link', '|',
+            'bulletedList', 'numberedList', '|',
+            'outdent', 'indent', '|',
+            'imageUpload', 'blockQuote', 'insertTable', '|',
+            'undo', 'redo'
+          ]
+        },
+        language: 'en',
+        image: {
+          toolbar: [
+            'imageTextAlternative',
+            'imageStyle:full',
+            'imageStyle:side'
+          ]
+        },
+        table: {
+          contentToolbar: [
+            'tableColumn',
+            'tableRow',
+            'mergeTableCells'
+          ]
+        }
+      })
+      .then(editor => {
+        ckeditorEditor = editor;
+        // Set min height
+        editor.editing.view.change(writer => {
+          writer.setStyle('min-height', '300px', editor.editing.view.document.getRoot());
+        });
+      })
+      .catch(error => {
+        console.error('CKEditor initialization error:', error);
+      });
+  }
+
+  // Switch between editors
+  function switchEditor(editorType) {
+    // Update tab states
+    document.querySelectorAll('.editor-tab').forEach(tab => {
+      tab.classList.remove('active');
+    });
+    event.target.closest('.editor-tab').classList.add('active');
+
+    // Get current content
+    let currentContent = '';
+    if (currentEditor === 'tinymce' && tinymceEditor) {
+      currentContent = tinymceEditor.getContent();
+    } else if (currentEditor === 'ckeditor' && ckeditorEditor) {
+      currentContent = ckeditorEditor.getData();
+    } else if (currentEditor === 'plain') {
+      currentContent = document.getElementById('plain-editor').value;
+    }
+
+    // Hide all containers
+    document.getElementById('tinymce-container').style.display = 'none';
+    document.getElementById('ckeditor-container').style.display = 'none';
+    document.getElementById('plain-container').style.display = 'none';
+
+    // Show selected container and set content
+    if (editorType === 'tinymce') {
+      document.getElementById('tinymce-container').style.display = 'block';
+      setTimeout(() => {
+        if (tinymceEditor) {
+          tinymceEditor.setContent(currentContent);
+        } else {
+          initTinyMCE();
+          setTimeout(() => {
+            if (tinymceEditor) tinymceEditor.setContent(currentContent);
+          }, 500);
+        }
+      }, 100);
+    } else if (editorType === 'ckeditor') {
+      document.getElementById('ckeditor-container').style.display = 'block';
+      setTimeout(() => {
+        if (ckeditorEditor) {
+          ckeditorEditor.setData(currentContent);
+        } else {
+          initCKEditor();
+          setTimeout(() => {
+            if (ckeditorEditor) ckeditorEditor.setData(currentContent);
+          }, 500);
+        }
+      }, 100);
+    } else if (editorType === 'plain') {
+      document.getElementById('plain-container').style.display = 'block';
+      document.getElementById('plain-editor').value = currentContent;
+    }
+
+    currentEditor = editorType;
+    updateFormSubmission();
+  }
+
+  // Update form submission to use correct content
+  function updateFormSubmission() {
+    const form = document.querySelector('form');
+    const originalSubmit = form.onsubmit;
+    
+    form.onsubmit = function(e) {
+      // Get content from active editor
+      let content = '';
+      if (currentEditor === 'tinymce' && tinymceEditor) {
+        content = tinymceEditor.getContent();
+        document.getElementById('tinymce-editor').value = content;
+      } else if (currentEditor === 'ckeditor' && ckeditorEditor) {
+        content = ckeditorEditor.getData();
+        document.getElementById('ckeditor-content').value = content;
+        // Update main content field
+        document.getElementById('tinymce-editor').value = content;
+      } else if (currentEditor === 'plain') {
+        content = document.getElementById('plain-editor').value;
+        document.getElementById('tinymce-editor').value = content;
+      }
+      
+      return originalSubmit ? originalSubmit.call(this, e) : true;
+    };
+  }
+
+  // Initialize editors when page loads
+  window.addEventListener('load', function() {
+    initTinyMCE();
+    updateFormSubmission();
+  });
+
   // Show helpful tips
   setTimeout(() => {
     if (!localStorage.getItem('blogTipsShown')) {
-      alert('💡 Pro Tips:\n\n• Use Ctrl+S to save as draft\n• Use Ctrl+Enter to publish\n• SEO title should be under 60 characters\n• SEO description should be under 160 characters\n• Use relevant tags for better discoverability');
+      alert('💡 Pro Tips:\n\n• Use Ctrl+S to save as draft\n• Use Ctrl+Enter to publish\n• SEO title should be under 60 characters\n• SEO description should be under 160 characters\n• Use relevant tags for better discoverability\n• Switch between TinyMCE, CKEditor, and Plain Text for different editing experiences');
       localStorage.setItem('blogTipsShown', 'true');
     }
-  }, 2000);
+  }, 3000);
 </script>
 
 </body>
