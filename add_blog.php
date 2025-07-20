@@ -23,15 +23,44 @@ $error_message = '';
 
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
+  // Debug: Log what we're receiving
+  error_log("=== BLOG FORM SUBMISSION DEBUG ===");
+  error_log("POST data: " . print_r($_POST, true));
+  error_log("Status received: " . ($_POST['status'] ?? 'NOT SET'));
+  
   $title = $conn->real_escape_string($_POST['title']);
   $slug = $conn->real_escape_string($_POST['slug']);
-  $content = $conn->real_escape_string($_POST['content']);
+  // Handle content from different possible sources
+  $content = '';
+  if (!empty($_POST['content'])) {
+    $content = $_POST['content'];
+  } elseif (!empty($_POST['content_ckeditor'])) {
+    $content = $_POST['content_ckeditor'];
+  } elseif (!empty($_POST['content_plain'])) {
+    $content = $_POST['content_plain'];
+  }
+  
+  error_log("Content received: " . substr($content, 0, 100) . "...");
+  $content = $conn->real_escape_string($content);
   $category = $conn->real_escape_string($_POST['category']);
   $seo_title = $conn->real_escape_string($_POST['seo_title']);
   $seo_description = $conn->real_escape_string($_POST['seo_description']);
   $tags = $conn->real_escape_string($_POST['tags']);
   $status = $_POST['status'] ?? 'draft';
   $author = $_SESSION['admin'];
+  
+  error_log("Final status: " . $status);
+  
+  // Validate required fields
+  if (empty($title)) {
+    $error_message = "❌ Title is required.";
+  } elseif (empty($slug)) {
+    $error_message = "❌ URL slug is required.";
+  } elseif (empty($content)) {
+    $error_message = "❌ Content is required.";
+  } elseif (empty($category)) {
+    $error_message = "❌ Category is required.";
+  }
 
   $image = '';
   if (isset($_FILES['image']) && $_FILES['image']['error'] === 0) {
@@ -637,21 +666,23 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
               </div>
             </div>
             
+            <!-- Hidden field for actual content submission -->
+            <textarea id="final-content" name="content" required style="display: none;"></textarea>
+            
             <!-- TinyMCE Editor -->
             <div id="tinymce-container" class="editor-container">
-              <textarea id="tinymce-editor" name="content" required class="form-textarea content-editor" 
+              <textarea id="tinymce-editor" class="form-textarea content-editor" 
                         placeholder="Write your engaging blog content here..."></textarea>
             </div>
             
             <!-- CKEditor 5 Container -->
             <div id="ckeditor-container" class="editor-container" style="display: none;">
               <div id="ckeditor-editor"></div>
-              <textarea id="ckeditor-content" name="content_ckeditor" style="display: none;"></textarea>
             </div>
             
             <!-- Plain Text Editor -->
             <div id="plain-container" class="editor-container" style="display: none;">
-              <textarea id="plain-editor" name="content_plain" class="form-textarea content-editor" 
+              <textarea id="plain-editor" class="form-textarea content-editor" 
                         placeholder="Write your blog content here using HTML tags..."></textarea>
             </div>
             
@@ -1030,26 +1061,40 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
   // Update form submission to use correct content
   function updateFormSubmission() {
     const form = document.querySelector('form');
-    const originalSubmit = form.onsubmit;
     
-    form.onsubmit = function(e) {
-      // Get content from active editor
-      let content = '';
-      if (currentEditor === 'tinymce' && tinymceEditor) {
-        content = tinymceEditor.getContent();
-        document.getElementById('tinymce-editor').value = content;
-      } else if (currentEditor === 'ckeditor' && ckeditorEditor) {
-        content = ckeditorEditor.getData();
-        document.getElementById('ckeditor-content').value = content;
-        // Update main content field
-        document.getElementById('tinymce-editor').value = content;
-      } else if (currentEditor === 'plain') {
-        content = document.getElementById('plain-editor').value;
-        document.getElementById('tinymce-editor').value = content;
-      }
-      
-      return originalSubmit ? originalSubmit.call(this, e) : true;
-    };
+    // Remove any existing listeners
+    form.removeEventListener('submit', handleFormSubmit);
+    form.addEventListener('submit', handleFormSubmit);
+  }
+
+  function handleFormSubmit(e) {
+    // Get content from active editor
+    let content = '';
+    if (currentEditor === 'tinymce' && tinymceEditor) {
+      content = tinymceEditor.getContent();
+    } else if (currentEditor === 'ckeditor' && ckeditorEditor) {
+      content = ckeditorEditor.getData();
+    } else if (currentEditor === 'plain') {
+      content = document.getElementById('plain-editor').value;
+    }
+    
+    // Update the hidden content field
+    document.getElementById('final-content').value = content;
+    
+    // Debug: Log the content and form data
+    console.log('Form submission:', {
+      editor: currentEditor,
+      content: content.substring(0, 100) + '...',
+      contentLength: content.length,
+      finalContentSet: document.getElementById('final-content').value.length > 0
+    });
+    
+    // Check if content is empty
+    if (!content.trim()) {
+      alert('Please add some content to your blog post!');
+      e.preventDefault();
+      return false;
+    }
   }
 
   // Initialize editors when page loads
