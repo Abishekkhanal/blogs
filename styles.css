@@ -628,12 +628,15 @@ body {
   }
 
   /* Logo link - stays on left (your current structure) */
+  .navbar .logo-link,
   .navbar > a:first-child {
-    order: 1;
-    flex: 0 0 auto;
-    margin-right: auto;
+    order: 1 !important;
+    flex: 0 0 auto !important;
+    margin-right: auto !important;
+    margin-left: 0 !important;
   }
 
+  .navbar .logo-link img,
   .navbar > a:first-child img {
     height: 40px !important;
     width: auto;
@@ -733,6 +736,7 @@ body {
   }
 
   /* Additional fix for your specific HTML structure */
+  .navbar .logo-link,
   .navbar > a[href="index.php"] {
     order: -1 !important;
     flex: 0 0 auto !important;
@@ -740,6 +744,7 @@ body {
     margin-left: 0 !important;
   }
 
+  .navbar .logo-link img,
   .navbar > a[href="index.php"] img {
     height: 40px !important;
     max-height: 40px !important;
@@ -763,9 +768,10 @@ body {
     padding: 0.5rem 0.75rem;
   }
   
+  .navbar .logo-link img,
   .navbar > a img,
   .logo img {
-    height: 35px; /* Even smaller for very small screens */
+    height: 35px !important; /* Even smaller for very small screens */
   }
   
   .nav-toggle-label {
