@@ -53,15 +53,27 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   error_log("Final status: " . $status);
   error_log("Author: " . $author);
   
-  // Validate required fields
+  // Validate required fields with detailed logging
+  error_log("=== VALIDATION CHECK ===");
+  error_log("Title empty? " . (empty($title) ? "YES" : "NO") . " - Value: '" . $title . "'");
+  error_log("Slug empty? " . (empty($slug) ? "YES" : "NO") . " - Value: '" . $slug . "'");
+  error_log("Content empty? " . (empty($content) ? "YES" : "NO") . " - Length: " . strlen($content));
+  error_log("Category empty? " . (empty($category) ? "YES" : "NO") . " - Value: '" . $category . "'");
+  
   if (empty($title)) {
     $error_message = "❌ Title is required.";
+    error_log("Validation failed: Title is empty");
   } elseif (empty($slug)) {
     $error_message = "❌ URL slug is required.";
+    error_log("Validation failed: Slug is empty");
   } elseif (empty($content)) {
     $error_message = "❌ Content is required.";
+    error_log("Validation failed: Content is empty");
   } elseif (empty($category)) {
     $error_message = "❌ Category is required.";
+    error_log("Validation failed: Category is empty");
+  } else {
+    error_log("All validation checks passed!");
   }
 
   $image = '';
@@ -633,6 +645,9 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
           <i class="fas fa-exclamation-circle"></i>
           <?= $error_message ?>
         </div>
+        <script>
+          alert('Error: <?= addslashes($error_message) ?>');
+        </script>
       <?php endif; ?>
 
       <form method="POST" enctype="multipart/form-data" id="blogForm">
@@ -926,6 +941,26 @@ $categories = $conn->query("SELECT name FROM blog_categories ORDER BY name ASC")
     }
   }, 3000);
 </script>
+
+<!-- Debug Form for Testing -->
+<div style="position: fixed; bottom: 10px; right: 10px; background: #f0f0f0; padding: 10px; border: 2px solid #ccc; max-width: 300px;">
+  <h4>Debug Test Form</h4>
+  <form method="POST" style="font-size: 12px;">
+    <input type="text" name="title" placeholder="Test Title" required style="width: 100%; margin: 2px 0;"><br>
+    <input type="text" name="slug" placeholder="test-slug" required style="width: 100%; margin: 2px 0;"><br>
+    <textarea name="content" placeholder="Test content" required style="width: 100%; height: 40px; margin: 2px 0;"></textarea><br>
+    <select name="category" required style="width: 100%; margin: 2px 0;">
+      <option value="">Select Category</option>
+      <option value="travel">Travel</option>
+      <option value="food">Food</option>
+    </select><br>
+    <input type="text" name="seo_title" placeholder="SEO Title" style="width: 100%; margin: 2px 0;"><br>
+    <input type="text" name="seo_description" placeholder="SEO Description" style="width: 100%; margin: 2px 0;"><br>
+    <input type="text" name="tags" placeholder="tags" style="width: 100%; margin: 2px 0;"><br>
+    <button type="submit" name="status" value="draft" style="width: 48%; margin: 2px 1%;">Draft</button>
+    <button type="submit" name="status" value="published" style="width: 48%; margin: 2px 1%;">Publish</button>
+  </form>
+</div>
 
 </body>
 </html>
