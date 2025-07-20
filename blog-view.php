@@ -891,51 +891,57 @@ function renderComments($comments, $allComments) {
     // Optimistic UI update
     updateLikeButton(button, !isLiked, true);
     
-    // Send AJAX request
-    const formData = new FormData();
-    formData.append('blog_id', blogId);
-    formData.append('action', action);
+    // Use XMLHttpRequest for better compatibility
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', 'like_ajax.php', true);
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     
-    fetch('like_ajax.php', {
-      method: 'POST',
-      body: formData
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json();
-    })
-    .then(data => {
-      console.log('Server response:', data);
-      if (data.success) {
-        // Update like count
-        const countElement = document.getElementById('likes-count-' + blogId);
-        if (countElement) {
-          countElement.textContent = data.likes_count + ' likes';
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState === 4) {
+        button.classList.remove('loading');
+        
+        if (xhr.status === 200) {
+          try {
+            const data = JSON.parse(xhr.responseText);
+            console.log('Server response:', data);
+            
+            if (data.success) {
+              // Update like count
+              const countElement = document.getElementById('likes-count-' + blogId);
+              if (countElement) {
+                countElement.textContent = data.likes_count + ' likes';
+              }
+              
+              // Update button state
+              updateLikeButton(button, data.action === 'liked', false);
+              
+              // Show subtle animation
+              button.style.transform = 'scale(1.1)';
+              setTimeout(() => {
+                button.style.transform = 'scale(1)';
+              }, 150);
+              
+            } else {
+              // Revert optimistic update on error
+              updateLikeButton(button, isLiked, false);
+              showNotification(data.message || 'Failed to process like', 'error');
+            }
+          } catch (e) {
+            console.error('JSON parse error:', e, 'Response:', xhr.responseText);
+            updateLikeButton(button, isLiked, false);
+            showNotification('Invalid server response', 'error');
+          }
+        } else {
+          // Revert optimistic update on error
+          updateLikeButton(button, isLiked, false);
+          showNotification('Network error. Please try again.', 'error');
         }
-        
-        // Update button state
-        updateLikeButton(button, data.action === 'liked', false);
-        
-        // Show subtle animation
-        button.style.transform = 'scale(1.1)';
-        setTimeout(() => {
-          button.style.transform = 'scale(1)';
-        }, 150);
-        
-      } else {
-        // Revert optimistic update on error
-        updateLikeButton(button, isLiked, false);
-        showNotification(data.message, 'error');
       }
-    })
-    .catch(error => {
-      // Revert optimistic update on error
-      updateLikeButton(button, isLiked, false);
-      showNotification('Network error. Please try again.', 'error');
-      console.error('Like error:', error);
-    });
+    };
+    
+    // Send data as URL-encoded form data
+    const params = 'blog_id=' + encodeURIComponent(blogId) + '&action=' + encodeURIComponent(action);
+    xhr.send(params);
   }
 
   function updateLikeButton(button, liked, loading) {

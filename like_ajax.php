@@ -13,21 +13,37 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit();
 }
 
-// Get input data - try both JSON and form data
-$input = null;
+// Get input data - handle different content types
+$input = $_POST; // Default to $_POST
+
 $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
 
 if (strpos($contentType, 'application/json') !== false) {
     // JSON request
     $jsonInput = file_get_contents('php://input');
-    $input = json_decode($jsonInput, true);
-} else {
-    // Form data request
+    $decoded = json_decode($jsonInput, true);
+    if ($decoded !== null) {
+        $input = $decoded;
+    }
+} elseif (strpos($contentType, 'application/x-www-form-urlencoded') !== false) {
+    // URL-encoded form data - already in $_POST
     $input = $_POST;
+} else {
+    // Try to parse raw input as URL-encoded data
+    $rawInput = file_get_contents('php://input');
+    if ($rawInput) {
+        parse_str($rawInput, $parsedInput);
+        if (!empty($parsedInput)) {
+            $input = $parsedInput;
+        }
+    }
 }
 
-// Debug: log the input
-error_log("Like AJAX Input: " . print_r($input, true));
+// Debug: log the input and request details
+error_log("Like AJAX - Method: " . $_SERVER['REQUEST_METHOD']);
+error_log("Like AJAX - Content-Type: " . $contentType);
+error_log("Like AJAX - Input: " . print_r($input, true));
+error_log("Like AJAX - Raw POST: " . print_r($_POST, true));
 
 // Get parameters
 $blogId = isset($input['blog_id']) ? (int)$input['blog_id'] : 0;
