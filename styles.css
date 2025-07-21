@@ -95,9 +95,20 @@ body {
   z-index: 1001;
 }
 
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
 .topbar-left span,
 .topbar-right span {
-  margin-right: 15px;
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -105,7 +116,6 @@ body {
 
 .topbar-right a {
   color: white;
-  margin-left: 10px;
   font-size: 1rem;
   text-decoration: none;
 }
@@ -115,9 +125,9 @@ body {
   color: black;
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
-  margin-left: 0.5rem;
   font-weight: bold;
   transition: background 0.3s;
+  text-decoration: none;
 }
 
 .topbar .btn-quote:hover {
@@ -140,7 +150,7 @@ body {
   min-height: 70px;
 }
 
-/* Logo styling - works for both direct anchor and .logo class */
+/* Logo styling */
 .navbar > a,
 .logo,
 .logo-link {
@@ -342,33 +352,6 @@ body {
   text-decoration: none;
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes typing {
-  from { width: 0; }
-  to { width: 100%; }
-}
-
-@keyframes blink {
-  from, to { border-color: transparent; }
-  50% { border-color: white; }
-}
-
 /* ======= TOURS SECTION ======= */
 .tours-section {
   padding: 3rem 1rem;
@@ -379,6 +362,13 @@ body {
 .tours-section h2 {
   font-size: 2rem;
   margin-bottom: 1rem;
+}
+
+.dest-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  color: #555;
 }
 
 .tour-carousel {
@@ -408,6 +398,22 @@ body {
 
 .tour-card:hover img {
   transform: scale(1.05);
+}
+
+.tour-info {
+  padding: 1.5rem;
+}
+
+.tour-info h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.tour-info p {
+  margin: 0 0 1rem 0;
+  color: #666;
+  line-height: 1.5;
 }
 
 .view-btn {
@@ -581,51 +587,47 @@ body {
 
 /* Mobile Navigation Styles */
 @media (max-width: 768px) {
+  /* Enhanced Mobile Topbar - ALWAYS VISIBLE */
   .topbar {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-    padding: 6px 12px;
-    font-size: 0.75rem;
-    min-height: 40px;
-  }
-  
-  .topbar-left {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
     gap: 8px;
+    padding: 8px 12px;
+    font-size: 0.8rem;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 1002;
   }
   
+  .topbar-left,
   .topbar-right {
     display: flex;
-    flex-wrap: wrap;
+    justify-content: center;
     align-items: center;
-    gap: 6px;
+    flex-wrap: wrap;
+    gap: 8px;
   }
   
   .topbar-left span,
   .topbar-right span {
-    margin: 0;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     white-space: nowrap;
   }
   
   .topbar-right a {
-    margin: 0;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
   }
   
   .topbar .btn-quote {
-    padding: 0.2rem 0.4rem;
-    font-size: 0.65rem;
-    white-space: nowrap;
+    padding: 0.2rem 0.5rem;
+    font-size: 0.7rem;
+    border-radius: 3px;
   }
 
+  /* Mobile Navbar */
   .navbar {
-    top: auto;
+    top: 0;
     padding: 12px 16px;
     display: flex;
     flex-direction: row;
@@ -637,7 +639,7 @@ body {
     box-sizing: border-box;
   }
 
-  /* Logo link - stays on left */
+  /* Logo - stays on left */
   .navbar .logo-link,
   .navbar > a:first-child {
     order: 1;
@@ -661,7 +663,7 @@ body {
     padding: 0;
   }
 
-  /* Checkbox and label positioning */
+  /* Mobile toggle */
   .nav-toggle {
     order: 2;
     position: absolute;
@@ -736,12 +738,7 @@ body {
     font-size: 0.9rem;
   }
 
-  /* Footer adjustments */
-  .footer-links {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  /* Hero content adjustments */
+  /* Hero adjustments */
   .hero-content h1 {
     font-size: 2rem;
   }
@@ -754,36 +751,34 @@ body {
     font-size: 28px;
   }
 
-  /* Force proper layout */
-  .navbar * {
-    box-sizing: border-box;
+  /* Tours section mobile */
+  .tours-section {
+    padding: 2rem 1rem;
   }
 
-  /* Clean mobile navbar layout */
-  .navbar > * {
-    box-sizing: border-box;
+  .tour-carousel {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  /* Footer adjustments */
+  .footer-links {
+    grid-template-columns: 1fr 1fr;
   }
 }
 
 /* Extra small devices */
 @media (max-width: 480px) {
+  /* Compact topbar for very small screens */
   .topbar {
-    padding: 4px 8px;
-    font-size: 0.65rem;
-    flex-direction: column;
-    gap: 4px;
-    min-height: auto;
-  }
-  
-  .topbar-left,
-  .topbar-right {
-    justify-content: center;
-    gap: 4px;
+    padding: 6px 8px;
+    font-size: 0.7rem;
+    gap: 6px;
   }
   
   .topbar-left span,
   .topbar-right span {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
   }
   
   .topbar .btn-quote {
@@ -791,6 +786,7 @@ body {
     padding: 0.15rem 0.3rem;
   }
 
+  /* Navbar adjustments */
   .navbar {
     padding: 10px 12px;
     min-height: 60px;
@@ -815,6 +811,7 @@ body {
     padding: 8px 15px;
   }
 
+  /* Footer for small screens */
   .footer-links {
     grid-template-columns: 1fr;
   }
@@ -824,6 +821,7 @@ body {
     text-align: center;
   }
 
+  /* Hero adjustments */
   .hero-content h1 {
     font-size: 1.5rem;
   }
@@ -841,25 +839,7 @@ body {
   }
 }
 
-/* Ensure proper flexbox behavior */
-.navbar > * {
-  flex-shrink: 0;
-}
-
-/* Additional utility classes */
-.text-center {
-  text-align: center;
-}
-
-.mt-2 {
-  margin-top: 2rem;
-}
-
-.mb-2 {
-  margin-bottom: 2rem;
-}
-
-/* Marquee */
+/* Scrolling text / Marquee */
 .scrolling-text {
   width: 100%;
   overflow: hidden;
@@ -896,6 +876,19 @@ body {
   100% {
     transform: translateX(-100%);
   }
+}
+
+/* Utility classes */
+.text-center {
+  text-align: center;
+}
+
+.mt-2 {
+  margin-top: 2rem;
+}
+
+.mb-2 {
+  margin-bottom: 2rem;
 }
 
 /* Print styles */
