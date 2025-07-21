@@ -28,8 +28,7 @@ function ensureTopbarVisible() {
     topbar.style.height = 'auto';
     topbar.style.backgroundColor = '#003300';
     topbar.style.color = 'white';
-    topbar.style.position = 'sticky';
-    topbar.style.top = '0';
+    topbar.style.position = 'relative';
     topbar.style.zIndex = '1002';
     
     // Apply mobile styles if on mobile
