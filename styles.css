@@ -80,11 +80,11 @@ body {
   100% { transform: translateX(-100%); }
 }
 
-/* ======= TOPBAR ======= */
+/* ======= TOPBAR - ALWAYS VISIBLE ======= */
 .topbar {
-  background-color: #003300;
-  color: white;
-  display: flex;
+  background-color: #003300 !important;
+  color: white !important;
+  display: flex !important;
   justify-content: space-between;
   align-items: center;
   padding: 8px 20px;
@@ -93,36 +93,39 @@ body {
   position: sticky;
   top: 0;
   z-index: 1001;
+  visibility: visible !important;
+  opacity: 1 !important;
+  height: auto !important;
 }
 
 .topbar-left {
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 15px;
 }
 
 .topbar-right {
-  display: flex;
+  display: flex !important;
   align-items: center;
   gap: 15px;
 }
 
 .topbar-left span,
 .topbar-right span {
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
   gap: 0.3rem;
 }
 
 .topbar-right a {
-  color: white;
+  color: white !important;
   font-size: 1rem;
   text-decoration: none;
 }
 
 .topbar .btn-quote {
-  background: #ffc107;
-  color: black;
+  background: #ffc107 !important;
+  color: black !important;
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
   font-weight: bold;
@@ -583,51 +586,67 @@ body {
   color: #ccc;
 }
 
-/* ======= RESPONSIVE DESIGN ======= */
+/* ======= MOBILE RESPONSIVE DESIGN ======= */
 
 /* Mobile Navigation Styles */
 @media (max-width: 768px) {
-  /* Enhanced Mobile Topbar - ALWAYS VISIBLE */
+  /* FORCE TOPBAR VISIBILITY ON MOBILE */
   .topbar {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 8px 12px;
-    font-size: 0.8rem;
-    text-align: center;
-    position: sticky;
-    top: 0;
-    z-index: 1002;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    padding: 12px 15px !important;
+    font-size: 0.8rem !important;
+    text-align: center !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1002 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    min-height: 70px !important;
+    background-color: #003300 !important;
+    color: white !important;
   }
   
   .topbar-left,
   .topbar-right {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+    width: 100% !important;
   }
   
   .topbar-left span,
   .topbar-right span {
-    font-size: 0.75rem;
-    white-space: nowrap;
+    font-size: 0.75rem !important;
+    white-space: nowrap !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
   }
   
   .topbar-right a {
-    font-size: 0.9rem;
+    font-size: 0.9rem !important;
+    color: white !important;
+    text-decoration: none !important;
   }
   
   .topbar .btn-quote {
-    padding: 0.2rem 0.5rem;
-    font-size: 0.7rem;
-    border-radius: 3px;
+    padding: 0.3rem 0.6rem !important;
+    font-size: 0.7rem !important;
+    border-radius: 3px !important;
+    background: #ffc107 !important;
+    color: black !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
   }
 
   /* Mobile Navbar */
   .navbar {
-    top: 0;
+    top: 0 !important;
     padding: 12px 16px;
     display: flex;
     flex-direction: row;
@@ -769,21 +788,23 @@ body {
 
 /* Extra small devices */
 @media (max-width: 480px) {
-  /* Compact topbar for very small screens */
+  /* ENHANCED TOPBAR FOR VERY SMALL SCREENS */
   .topbar {
-    padding: 6px 8px;
-    font-size: 0.7rem;
-    gap: 6px;
+    display: flex !important;
+    padding: 10px 8px !important;
+    font-size: 0.7rem !important;
+    gap: 8px !important;
+    min-height: 60px !important;
   }
   
   .topbar-left span,
   .topbar-right span {
-    font-size: 0.65rem;
+    font-size: 0.65rem !important;
   }
   
   .topbar .btn-quote {
-    font-size: 0.6rem;
-    padding: 0.15rem 0.3rem;
+    font-size: 0.6rem !important;
+    padding: 0.2rem 0.4rem !important;
   }
 
   /* Navbar adjustments */
@@ -837,6 +858,19 @@ body {
   .tours-section h2 {
     font-size: 1.5rem;
   }
+}
+
+/* OVERRIDE ANY HIDING ATTEMPTS */
+.topbar[style*="display: none"] {
+  display: flex !important;
+}
+
+.topbar[style*="visibility: hidden"] {
+  visibility: visible !important;
+}
+
+.topbar[style*="opacity: 0"] {
+  opacity: 1 !important;
 }
 
 /* Scrolling text / Marquee */
