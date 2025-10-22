@@ -1,0 +1,127 @@
+/* ======= MOBILE LOGO FIX ======= */
+
+/* Enhanced navbar structure for better mobile layout */
+.navbar {
+  background-color: white;
+  position: sticky;
+  top: 40px; /* Offset for topbar */
+  z-index: 1000;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  transition: background-color 0.3s ease;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0; /* Prevent logo from shrinking */
+}
+
+.logo img {
+  height: 50px;
+  width: auto;
+  display: block;
+}
+
+/* Improved mobile responsive design */
+@media (max-width: 768px) {
+  .topbar {
+    display: none !important;
+  }
+
+  .navbar {
+    top: 0 !important;
+    padding: 0.75rem 1rem;
+    flex-wrap: nowrap; /* Prevent wrapping */
+    position: relative;
+  }
+
+  /* Logo positioning - stays on left */
+  .logo {
+    order: 1;
+    margin-right: auto; /* Push logo to the left */
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .logo img {
+    height: 40px; /* Smaller on mobile for better fit */
+    width: auto;
+  }
+
+  /* Hamburger menu - stays on right */
+  .nav-toggle-label {
+    order: 2;
+    display: block;
+    font-size: 1.8rem;
+    color: #004b23;
+    cursor: pointer;
+    padding: 0.5rem;
+    margin-left: auto; /* Push to the right */
+  }
+
+  /* Mobile navigation menu */
+  .nav-links {
+    order: 3;
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    background: #fff;
+    padding: 10px 20px;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+  }
+
+  .nav-links li {
+    margin: 10px 0;
+    text-align: left;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 0.5rem 0;
+  }
+
+  /* Show menu when toggle is checked */
+  .nav-toggle:checked ~ .nav-links {
+    display: flex;
+  }
+
+  /* Alternative selector if the structure is different */
+  .nav-toggle:checked + .nav-toggle-label + .nav-links {
+    display: flex;
+  }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+  .navbar {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .logo img {
+    height: 35px; /* Even smaller for very small screens */
+  }
+  
+  .nav-toggle-label {
+    font-size: 1.6rem;
+  }
+}
+
+/* Ensure proper flexbox behavior */
+.navbar > * {
+  flex-shrink: 0; /* Prevent items from shrinking */
+}
+
+/* Additional fix for logo container */
+.logo {
+  min-width: fit-content; /* Ensure logo doesn't compress */
+  white-space: nowrap;
+}
